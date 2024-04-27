@@ -10,4 +10,8 @@ router.get('/yes', (req, res) => {
     res.status(200).json('yess')
 })
 
+router.post('/webhooks/shopify', (req, res) => {
+    res.sendStatus(200);
+})
+
 module.exports = router
