@@ -1,15 +1,28 @@
-// Download the helper library from https://www.twilio.com/docs/node/install
-// Set environment variables for your credentials
-// Read more at http://twil.io/secure
-
 require('dotenv').config()
 const accountSid = process.env.TWILIO_SID;
 const authToken = process.env.AUTH;
+const port = process.env.PORT;
+
+const express = require('express')
+const cors = require('cors')
+const router = require('./src/routes/routes.js')
+const app = express()
 
 // const client = require("twilio")(accountSid, authToken);
 
 function startServer() {
+  app.use(cors())
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: false }))
+  app.use(router)
+
+  const port = process.env.PORT;
+  app.listen(port, "0.0.0.0", function () {
+    // ...
+  });
+
   console.log('All good')
+  console.log(port)
 }
 
 startServer()
