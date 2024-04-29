@@ -6,7 +6,7 @@ const app = express();
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
-const twilioClient = twilio(accountSid, authToken);
+const client = require('twilio')(accountSid, authToken);
 
 app.get('/makeCall', async (req, res) => {
   const phoneNumber = req.query.phoneNumber;
@@ -14,10 +14,10 @@ app.get('/makeCall', async (req, res) => {
   const CustomerName = req.query.CustomerName;
 
   try {
-    await twilioClient.calls.create({
+    await client.calls.create({
+      url: 'https://handler.twilio.com/twiml/EH3ff25c2abb305b0788c745c1f123cce7',
       to: `+${phoneNumber}`,
       from: '+13343100649',
-      url: 'https://handler.twilio.com/twiml/EH3ff25c2abb305b0788c745c1f123cce7',
     });
 
     res.send({
