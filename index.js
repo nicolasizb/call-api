@@ -1,35 +1,70 @@
 require('dotenv').config()
-const accountSid = process.env.TWILIO_SID;
-const authToken = process.env.AUTH;
-const port = process.env.PORT;
 
 const express = require('express')
-const cors = require('cors')
-const router = require('./src/routes/routes.js')
-const app = express()
 
-// const client = require("twilio")(accountSid, authToken);
+const accountSid = 'AC543fc2f1fd0ee20ea8908462645ea542';
+const authToken = '969eb9dc66ef04de0ddfdcb1b9628cf8';
 
-function startServer() {
-  app.use(cors())
-  app.use(express.json())
-  app.use(express.urlencoded({ extended: false }))
-  app.use(router)
+// twilio.calls
+//       .create({
+//          url: 'https://handler.twilio.com/twiml/EH3ff25c2abb305b0788c745c1f123cce7',
+//          to: '+573102950378',
+//          from: '+13343100649'
+//        })
+//       .then(call => console.log(call.sid));
 
-  const port = process.env.PORT;
-  app.listen(port, "0.0.0.0", function () {
-    // ...
-  });
 
-  console.log('All good')
-  console.log(port)
-}
+const bodyParser = require('body-parser');
+const twilio = require('twilio');
 
-startServer()
+const app = express();
+const port = process.env.PORT;
 
-// client.calls.create({
-//   url: "https://corn-alpaca-7119.twil.io/assets/WhatsApp%20Audio%202024-04-25%20at%205.23.57%20PM.mp3",
-//   to: "+573102950378",
-//   from: "+12564484110",
-// })
-// .then(call => console.log(call.sid));
+// Configurar Twilio
+const client = twilio(accountSid, authToken);
+
+// Configurar bodyParser para procesar JSON
+app.use(bodyParser.json());
+
+// Ruta para la solicitud de Zapier
+app.post('/twilio-api-request', async (req, res) => {
+  // Extraer datos de la solicitud
+  const method = req.body.method;
+  const url = req.body.url;
+  const headers = req.body.headers;
+  const body = req.body.body;
+
+  // Crear opciones de solicitud
+  const options = { 
+    method,
+    url,
+    headers,
+  };
+
+  // Si hay un cuerpo, agregarlo a las opciones
+  if (body) {
+    options.body = body;
+  }
+
+  // Realizar la solicitud a la API de Twilio
+  try {
+    const response = await client.request(options);
+    res.json({
+      success: true,
+      statusCode: response.statusCode,
+      headers: response.headers,
+      body: response.body,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+// Iniciar el servidor
+app.listen(port, () => {
+  console.log(`Servidor escuchando en el puerto ${port}`);
+});
