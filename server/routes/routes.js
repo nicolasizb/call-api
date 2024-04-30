@@ -5,7 +5,7 @@ const router = express.Router()
 const VoiceResponse = require('twilio').twiml.VoiceResponse;
 
 const accountSid = 'AC543fc2f1fd0ee20ea8908462645ea542'
-const authToken = '05601ff197d4aa165e37dff5b69e56c9'
+const authToken = '95c4cdd36696c8a5ed1598299dfcf4bb'
 const twilio = require('twilio')(accountSid, authToken)
 
 
@@ -44,7 +44,7 @@ router.post('/call', async (req, res) => {
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
             },
-            'O marque el número 2, para editar su dirección de envío del pedido.'
+            'O marque el número 2, para cambiar la dirección de envío de su pedido.'
         )
 
         res.type('text/xml')
