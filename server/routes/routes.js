@@ -50,7 +50,6 @@ router.post('/call', async (req, res) => {
         res.type('text/xml')
         res.send(twiml.toString())
 
-        // Crear la llamada telefónica
         const call = await twilio.calls.create({
             twiml: twiml.toString(),
             to: clientNumber,
