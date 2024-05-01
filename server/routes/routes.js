@@ -3,11 +3,10 @@ const express = require('express');
 const router = express.Router();
 const VoiceResponse = require('twilio').twiml.VoiceResponse;
 
-// Tu código actual aquí
 require('dotenv').config();
 
 const accountSid = 'AC543fc2f1fd0ee20ea8908462645ea542';
-const authToken = process.env.TWILIO_AUTH_TOKEN;
+const authToken = '95c4cdd36696c8a5ed1598299dfcf4bb';
 const twilio = require('twilio')(accountSid, authToken);
 
 router.post('/call', async (req, res) => {
