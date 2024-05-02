@@ -12,12 +12,12 @@ router.get('/', (req, res) => {
 
 router.post('/call', async (req, res) => {
     
-    if (!req.body.clientNumber || !req.body.city || !req.body.city || !req.body.store || !req.body.customerName) {
+    if (!req.body.clientNumber || !req.body.addressOne || !req.body.city || !req.body.city || !req.body.store || !req.body.customerName) {
         res.status(400).json({ error: "Invalid data" })
     } else {
         const supportNumber = process.env.SUPPORT_NUMBER
         
-        const { clientNumber, city, store, customerName } = req.body
+        const { clientNumber, addressOne, city, store, customerName } = req.body
         
         try {
             const twiml = new VoiceResponse()
@@ -26,7 +26,7 @@ router.post('/call', async (req, res) => {
                     language: 'es',
                     voice: 'Polly.Mia-Neural'
                 },
-                `Hola ${customerName}, lo llamamos desde la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Su dirección es ... en ${city}?`
+                `Hola ${customerName}, lo llamamos desde la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Su dirección es ${addressOne} en ${city}?`
             )
 
             const gather = twiml.gather({
