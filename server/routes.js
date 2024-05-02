@@ -1,29 +1,26 @@
-require('dotenv').config();
-
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 const VoiceResponse = require('twilio').twiml.VoiceResponse;
 
-const accountSid = process.env.ACCOUNT_SID
-const authToken = process.env.AUTH_TOKEN
-const twilio = require('twilio')(accountSid, authToken)
-
+const accountSid = process.env.ACCOUNT_SID;
+const authToken = process.env.AUTH_TOKEN;
+const twilio = require('twilio')(accountSid, authToken);
 
 router.get('/', (req, res) => {
-    res.status(200).json({ res: "All good" })
-})
+    res.status(200).json({ res: "All good" });
+});
 
 router.get('/call', (req, res) => {
-    res.status(200).json({ res: "Call is good" })
-})
+    res.status(200).json({ res: "Call is good" });
+});
 
 router.post('/call', async (req, res) => {
-    const clientNumber = req.query.clientNumber
-    const supportNumber = process.env.SUPPORT_NUMBER
-    const customerName = req.query.customerName || ""
+    const clientNumber = req.query.clientNumber;
+    const supportNumber = process.env.SUPPORT_NUMBER;
+    const customerName = req.query.customerName || "";
 
     try {
-        const twiml = new VoiceResponse()
+        const twiml = new VoiceResponse();
         twiml.say(
             {
                 language: 'es',
@@ -44,7 +41,7 @@ router.post('/call', async (req, res) => {
                 voice: 'Polly.Mia-Neural'
             },
             'Por favor marque el número 1, para confirmar que está correcta la dirección.'
-        )
+        );
 
         gather.say(
             {
@@ -52,10 +49,7 @@ router.post('/call', async (req, res) => {
                 voice: 'Polly.Mia-Neural'
             },
             'O marque el número 2, para cambiar la dirección de envío de su pedido.'
-        )
-
-        res.type('text/xml')
-        res.send(twiml.toString())
+        );
 
         const call = await twilio.calls.create({
             twiml: twiml.toString(),
@@ -63,13 +57,13 @@ router.post('/call', async (req, res) => {
             from: supportNumber
         });
 
-        console.log(call.sid)
+        console.log(call.sid);
 
-        res.status(200).json({res: "Call success"})
+        res.type('text/xml').send(twiml.toString());
     } catch (error) {
-        console.error(error)
-        res.status(500).send('Error al realizar la llamada')
+        console.error(error);
+        res.status(500).send('Error al realizar la llamada');
     }
-})
+});
 
 module.exports = router;
