@@ -13,6 +13,10 @@ router.get('/', (req, res) => {
     res.status(200).json({ res: "All good" })
 })
 
+router.get('/call', (req, res) => {
+    res.status(200).json({ res: "Call is good" })
+})
+
 router.post('/call', async (req, res) => {
     const clientNumber = req.query.clientNumber
     const supportNumber = process.env.SUPPORT_NUMBER
