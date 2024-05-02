@@ -4,15 +4,14 @@ const express = require('express')
 const router = express.Router()
 const VoiceResponse = require('twilio').twiml.VoiceResponse;
 
-const accountSid = 'AC543fc2f1fd0ee20ea8908462645ea542'
-const authToken = '95c4cdd36696c8a5ed1598299dfcf4bb'
+const accountSid = process.env.ACCOUNT_SID
+const authToken = process.env.AUTH_TOKEN
 const twilio = require('twilio')(accountSid, authToken)
 
 
 router.post('/call', async (req, res) => {
-    const clientNumber = '+573102950378'
-    const supportNumber = '+13343100649'
-
+    const clientNumber = req.query.clientNumber
+    const supportNumber = process.env.SUPPORT_NUMBER
     const customerName = req.query.customerName || ""
 
     try {
