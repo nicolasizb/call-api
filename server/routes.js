@@ -9,6 +9,10 @@ const authToken = process.env.AUTH_TOKEN
 const twilio = require('twilio')(accountSid, authToken)
 
 
+router.get('/', (req, res) => {
+    res.status(200).json({ res: "All good" })
+})
+
 router.post('/call', async (req, res) => {
     const clientNumber = req.query.clientNumber
     const supportNumber = process.env.SUPPORT_NUMBER
@@ -56,6 +60,8 @@ router.post('/call', async (req, res) => {
         });
 
         console.log(call.sid)
+
+        res.status(200).json({res: "Call success"})
     } catch (error) {
         console.error(error)
         res.status(500).send('Error al realizar la llamada')
