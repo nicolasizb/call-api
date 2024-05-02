@@ -9,7 +9,7 @@
     "routes": [
         {
             "src": "/call",
-            "dest": "./server/routes.js"
+            "dest": "/server/routes.js"
         }
     ]
 }
