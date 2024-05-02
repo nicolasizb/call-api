@@ -8,7 +8,7 @@
     ],
     "routes": [
         {
-            "src": "/api/call",
+            "src": "/call",
             "dest": "server/routes.js"
         }
     ]
