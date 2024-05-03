@@ -31,7 +31,7 @@ router.post('/call', async (req, res) => {
 
             const gather = twiml.gather({
                 numDigits: 1,
-                action: 'https://call-api-phi.vercel.app/validation', // Cambié la ruta aquí
+                action: '/validation', // Ruta para manejar la validación
                 method: 'POST'
             })
 
@@ -59,13 +59,8 @@ router.post('/call', async (req, res) => {
 
             console.log(call.sid)
 
-            // Devolver una promesa para manejar la respuesta de /validation
-            return new Promise((resolve, reject) => {
-                req.on('validationResponse', (response) => {
-                    res.type('text/xml').send(response);
-                    resolve();
-                });
-            });
+            // Enviar TwiML como respuesta
+            res.type('text/xml').send(twiml.toString());
             
         } catch (error) {
             console.error(error)
@@ -86,7 +81,8 @@ router.post('/validation', (req, res) => {
                 voice: 'Polly.Mia-Neural'
             }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.')
 
-            res.send("Dirección confirmada")
+            // Devolver la respuesta adecuada
+            res.send(twiml.toString())
 
             break;
         case '2':
@@ -95,19 +91,17 @@ router.post('/validation', (req, res) => {
                 voice: 'Polly.Mia-Neural'
             },'Usted acaba de confirmar que su dirección es incorrecta, procederemos a editar su dirección')
 
-            res.send("Dirección incorrecta")
+            // Devolver la respuesta adecuada
+            res.send(twiml.toString())
 
             break;
         default:
             twiml.say('Opción no válida. Por favor, intenta de nuevo.')
+
+            // Devolver la respuesta adecuada
+            res.send(twiml.toString())
             break;
     }
-    
-    res.type('text/xml');
-    res.send(twiml.toString());
-
-    // Emitir la respuesta de /validation al endpoint /call
-    req.emit('validationResponse', twiml.toString());
 })
 
 module.exports = router
