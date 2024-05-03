@@ -45,18 +45,23 @@ router.post('/call', async (req, res) => {
                 'Por favor marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.'
             )
 
+            console.log(call.sid);
+
             const call = await twilio.calls.create({
                 twiml: twiml.toString(),
                 to: clientNumber,
                 from: supportNumber
             })
 
-            console.log(call.sid)
-
             const waitForDigit = new Promise(resolve => {
-                router.post('https://call-api-phi.vercel.app/validation', (req, res) => {
-                    digitPressed = req.body.Digits;
+                const timeout = setTimeout(() => {
+                    console.log("Timeout reached");
                     resolve();
+                }, 60000); 
+
+                router.post('/validation', (req, res) => {
+                    digitPressed = req.body.Digits;
+                    resolve(); 
                 });
             });
 
