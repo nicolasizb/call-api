@@ -53,6 +53,7 @@ router.post('/call', async (req, res) => {
 
             console.log(call.sid)
 
+            // Esperamos a que se complete la validación y se actualice digitStatus
             await waitForValidation()
 
             res.status(200).json({ digitStatus })
@@ -71,14 +72,14 @@ router.post('/validation', (req, res) => {
 
     switch (digitPressed) { 
         case '1':
-            digitStatus = 'digitOne';
+            digitStatus = true;
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
             }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.')
             break;
         case '2':
-            digitStatus = 'digitOne';
+            digitStatus = false;
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
@@ -95,7 +96,6 @@ router.post('/validation', (req, res) => {
     res.type('text/xml').send(twiml.toString())
 })
 
-// Función para esperar hasta que se complete la validación y se actualice digitStatus
 function waitForValidation() {
     return new Promise(resolve => {
         const interval = setInterval(() => {
@@ -103,9 +103,8 @@ function waitForValidation() {
                 clearInterval(interval)
                 resolve()
             }
-        }, 30000)
+        }, 1000)
     })
 }
 
-router.use(express.json()) // Middleware para el análisis de cuerpos JSON
 module.exports = router
