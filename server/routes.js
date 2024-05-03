@@ -31,7 +31,7 @@ router.post('/call', async (req, res) => {
 
             const gather = twiml.gather({
                 numDigits: 1,
-                action: 'https://call-api-phi.vercel.app/validation',
+                action: '/validation', // Cambié la ruta aquí
                 method: 'POST'
             })
 
@@ -59,7 +59,13 @@ router.post('/call', async (req, res) => {
 
             console.log(call.sid)
 
-            res.type('text/xml').send(twiml.toString())
+            // Devolver una promesa para manejar la respuesta de /validation
+            return new Promise((resolve, reject) => {
+                req.on('validationResponse', (response) => {
+                    res.type('text/xml').send(response);
+                    resolve();
+                });
+            });
             
         } catch (error) {
             console.error(error)
@@ -97,8 +103,11 @@ router.post('/validation', (req, res) => {
             break;
     }
     
-    res.type('text/xml')
-    res.send(twiml.toString())
+    res.type('text/xml');
+    res.send(twiml.toString());
+
+    // Emitir la respuesta de /validation al endpoint /call
+    req.emit('validationResponse', twiml.toString());
 })
 
 module.exports = router
