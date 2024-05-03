@@ -6,6 +6,8 @@ const accountSid = process.env.ACCOUNT_SID
 const authToken = process.env.AUTH_TOKEN
 const twilio = require('twilio')(accountSid, authToken)
 
+let digitPressed = null; 
+
 router.get('/', (req, res) => {
     res.status(200).json({ res: "All good" })
 })
@@ -51,7 +53,7 @@ router.post('/call', async (req, res) => {
 
             console.log(call.sid)
 
-            res.type('text/xml').send(twiml.toString())
+            res.status(200).json({ digitPressed: null });
             
         } catch (error) {
             console.error(error)
@@ -63,7 +65,7 @@ router.post('/call', async (req, res) => {
 router.post('/validation', (req, res) => {
     const twiml = new VoiceResponse()
     
-    const digitPressed = req.body.Digits;
+    digitPressed = req.body.Digits;
 
     switch (digitPressed) { 
         case '1':
