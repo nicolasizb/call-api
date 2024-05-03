@@ -26,7 +26,7 @@ router.post('/call', async (req, res) => {
                     language: 'es',
                     voice: 'Polly.Mia-Neural'
                 },
-                `Hola ${firstName} ${lastName}, lo llamamos desde la tienda ${store} para confirmar la direcciÃ³n de envÃ­o de su pedido. Â¿Su direcciÃ³n es ${addressOne} ${addressDetails} en ${city}?`
+                `Hola ${firstName} ${lastName}, lo llamamos desde la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Su dirección es ${addressOne} ${addressDetails} en ${city}?`
             )
 
             const gather = twiml.gather({
@@ -40,7 +40,7 @@ router.post('/call', async (req, res) => {
                     language: 'es',
                     voice: 'Polly.Mia-Neural'
                 },
-                'Por favor marque el nÃºmero 1, para confirmar que estÃ¡ correcta la direcciÃ³n.'
+                'Por favor marque el número 1, para confirmar que está correcta la dirección.'
             )
 
             gather.say(
@@ -48,7 +48,7 @@ router.post('/call', async (req, res) => {
                     language: 'es',
                     voice: 'Polly.Mia-Neural'
                 },
-                'O marque el nÃºmero 2, para cambiar la direcciÃ³n de envÃ­o de su pedido.'
+                'O marque el número 2, para cambiar la dirección de envío de su pedido.'
             )
 
             const call = await twilio.calls.create({
@@ -78,22 +78,22 @@ router.post('/validation', (req, res) => {
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            }, 'Usted acaba de confirmar que la direcciÃ³n mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envÃ­o.')
+            }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de enví­o.')
 
-            res.send("DirecciÃ³n confirmada")
+            res.send("Dirección confirmada")
 
             break;
         case '2':
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            },'Usted acaba de confirmar que su direcciÃ³n es incorrecta, procederemos a editar su direcciÃ³n')
+            },'Usted acaba de confirmar que su dirección es incorrecta, procederemos a cambiar su dirección')
 
-            res.send("DirecciÃ³n incorrecta")
+            res.send("Dirección incorrecta")
 
             break;
         default:
-            twiml.say('OpciÃ³n no vÃ¡lida. Por favor, intenta de nuevo.')
+            twiml.say('Opción no válida. Por favor, intenta de nuevo.')
             break;
     }
     
