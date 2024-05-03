@@ -6,7 +6,7 @@ const accountSid = process.env.ACCOUNT_SID
 const authToken = process.env.AUTH_TOKEN
 const twilio = require('twilio')(accountSid, authToken)
 
-let digitStatus = digitOne | digitTwo | false
+let digitStatus = false
 
 router.get('/', (req, res) => {
     res.status(200).json({ res: "All good" })
