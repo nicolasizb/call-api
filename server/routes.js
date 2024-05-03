@@ -6,8 +6,6 @@ const accountSid = process.env.ACCOUNT_SID
 const authToken = process.env.AUTH_TOKEN
 const twilio = require('twilio')(accountSid, authToken)
 
-let digitStatus = false
-
 router.get('/', (req, res) => {
     res.status(200).json({ res: "All good" })
 })
@@ -69,14 +67,12 @@ router.post('/validation', (req, res) => {
 
     switch (digitPressed) { 
         case '1':
-            digitStatus = true;
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
             }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.')
             break;
         case '2':
-            digitStatus = false;
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
