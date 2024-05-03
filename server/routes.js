@@ -95,10 +95,8 @@ router.post('/validation', (req, res) => {
             }, 'Opción no válida. Por favor, intenta de nuevo.')
             break;
     }
-
-    console.log(res.type('text/xml').send(twiml.toString()))
     
-    return res.type('text/xml').send(twiml.toString());
+    res.type('text/xml').send(twiml.toString());
 })
 
 module.exports = router
