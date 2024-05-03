@@ -6,7 +6,7 @@ const accountSid = process.env.ACCOUNT_SID
 const authToken = process.env.AUTH_TOKEN
 const twilio = require('twilio')(accountSid, authToken)
 
-let digitStatus = false
+let digitStatus = digitOne | digitTwo | false
 
 router.get('/', (req, res) => {
     res.status(200).json({ res: "All good" })
@@ -53,10 +53,7 @@ router.post('/call', async (req, res) => {
 
             console.log(call.sid)
 
-            // Esperamos a que se complete la validación y se actualice digitStatus
-            await waitForValidation()
-
-            res.status(200).json({ digitStatus })
+            res.type('text/xml').send(twiml.toString())
             
         } catch (error) {
             console.error(error)
@@ -95,16 +92,5 @@ router.post('/validation', (req, res) => {
     
     res.type('text/xml').send(twiml.toString())
 })
-
-function waitForValidation() {
-    return new Promise(resolve => {
-        const interval = setInterval(() => {
-            if (digitStatus !== false) {
-                clearInterval(interval)
-                resolve()
-            }
-        }, 1000)
-    })
-}
 
 module.exports = router
