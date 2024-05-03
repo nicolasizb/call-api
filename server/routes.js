@@ -71,7 +71,7 @@ router.post('/call', async (req, res) => {
 router.post('/validation', (req, res) => {
     const twiml = new VoiceResponse()
     
-    const digitPressed = req.body;
+    const digitPressed = req.body.Digits;
     
     switch (digitPressed) {
         case '1':
@@ -80,8 +80,6 @@ router.post('/validation', (req, res) => {
                 voice: 'Polly.Mia-Neural'
             }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.')
 
-            res.send("Dirección confirmada")
-
             break;
         case '2':
             twiml.say({
@@ -89,16 +87,16 @@ router.post('/validation', (req, res) => {
                 voice: 'Polly.Mia-Neural'
             },'Usted acaba de confirmar que su dirección es incorrecta, procederemos a editar su dirección')
 
-            res.send("Dirección incorrecta")
-
             break;
         default:
-            twiml.say('Opción no válida. Por favor, intenta de nuevo.')
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Opción no válida. Por favor, intenta de nuevo.')
             break;
     }
     
-    res.type('text/xml')
-    res.send(twiml.toString())
+    res.type('text/xml').send(twiml.toString());
 })
 
 module.exports = router
