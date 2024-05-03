@@ -53,12 +53,10 @@ router.post('/call', async (req, res) => {
 
             console.log(call.sid)
 
-            setInterval(() => {
-                if(digitPressed !== null) {
-                    res.status(200).json({ digitStatus: digitPressed });
-                } 
-            }, 1000)
-            
+            setTimeout(() => {
+                res.status(200).json({ digitStatus: digitPressed })
+            }, 20000)
+
         } catch (error) {
             console.error(error)
             res.status(500).send('Error al realizar la llamada')
