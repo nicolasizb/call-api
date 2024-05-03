@@ -45,29 +45,19 @@ router.post('/call', async (req, res) => {
                 'Por favor marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.'
             )
 
-            console.log(call.sid);
-
             const call = await twilio.calls.create({
                 twiml: twiml.toString(),
                 to: clientNumber,
                 from: supportNumber
             })
 
-            const waitForDigit = new Promise(resolve => {
-                const timeout = setTimeout(() => {
-                    console.log("Timeout reached");
-                    resolve();
-                }, 60000); 
+            console.log(call.sid)
 
-                router.post('/validation', (req, res) => {
-                    digitPressed = req.body.Digits;
-                    resolve(); 
-                });
-            });
-
-            await waitForDigit;
-
-            res.status(200).json({ digitPressed });
+            setInterval(() => {
+                if(digitPressed !== null) {
+                    res.status(200).json({ digitStatus: digitPressed });
+                } 
+            }, 1000)
             
         } catch (error) {
             console.error(error)
