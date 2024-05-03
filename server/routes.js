@@ -75,17 +75,30 @@ router.post('/validation', (req, res) => {
     
     switch (digitPressed) {
         case '1':
-            responseObject = { message: 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.' };
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.')
+
             break;
         case '2':
-            responseObject = { message: 'Usted acaba de confirmar que su dirección es incorrecta, procederemos a editar su dirección' };
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            },'Usted acaba de confirmar que su dirección es incorrecta, procederemos a editar su dirección')
+
             break;
         default:
-            responseObject = { message: 'Opción no válida. Por favor, intenta de nuevo.' };
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Opción no válida. Por favor, intenta de nuevo.')
             break;
     }
+
+    console.log(res.type('text/xml').send(twiml.toString()))
     
-    res.status(200).json(responseObject);
+    return res.type('text/xml').send(twiml.toString());
 })
 
 module.exports = router
