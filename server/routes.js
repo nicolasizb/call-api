@@ -6,6 +6,8 @@ const accountSid = process.env.ACCOUNT_SID
 const authToken = process.env.AUTH_TOKEN
 const twilio = require('twilio')(accountSid, authToken)
 
+let digitStatus = false
+
 router.get('/', (req, res) => {
     res.status(200).json({ res: "All good" })
 })
@@ -51,37 +53,9 @@ router.post('/call', async (req, res) => {
 
             console.log(call.sid)
 
-            // Espera la respuesta de /validation
-            const validationResponse = await new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    reject(new Error('Timeout waiting for validation response'))
-                }, 60000) // Timeout de 60 segundos
-                
-                router.post('/validation', (req, res) => {
-                    const digitPressed = req.body.Digits;
-                    let digitStatus;
+            await waitForValidation()
 
-                    switch (digitPressed) { 
-                        case '1':
-                            digitStatus = true;
-                            break;
-                        case '2':
-                            digitStatus = false;
-                            break;
-                        default:
-                            digitStatus = undefined;
-                            break;
-                    }
-
-                    resolve(digitStatus);
-                });
-            });
-
-            // Enviar respuesta de la llamada junto con la variable digitStatus
-            res.status(200).json({ 
-                callSid: call.sid,
-                digitStatus: validationResponse 
-            });
+            res.status(200).json({ digitStatus })
             
         } catch (error) {
             console.error(error)
@@ -90,4 +64,48 @@ router.post('/call', async (req, res) => {
     }
 })
 
+router.post('/validation', (req, res) => {
+    const twiml = new VoiceResponse()
+    
+    const digitPressed = req.body.Digits;
+
+    switch (digitPressed) { 
+        case '1':
+            digitStatus = 'digitOne';
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.')
+            break;
+        case '2':
+            digitStatus = 'digitOne';
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            },'Usted acaba de confirmar que su dirección es incorrecta, procederemos a editar su dirección')
+            break;
+        default:
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Opción no válida. Por favor, intenta de nuevo.')
+            break;
+    }
+    
+    res.type('text/xml').send(twiml.toString())
+})
+
+// Función para esperar hasta que se complete la validación y se actualice digitStatus
+function waitForValidation() {
+    return new Promise(resolve => {
+        const interval = setInterval(() => {
+            if (digitStatus !== false) {
+                clearInterval(interval)
+                resolve()
+            }
+        }, 1000)
+    })
+}
+
+router.use(express.json()) // Middleware para el análisis de cuerpos JSON
 module.exports = router
