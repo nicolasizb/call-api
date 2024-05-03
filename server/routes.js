@@ -103,7 +103,7 @@ function waitForValidation() {
                 clearInterval(interval)
                 resolve()
             }
-        }, 1000)
+        }, 10000)
     })
 }
 
