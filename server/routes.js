@@ -79,12 +79,18 @@ router.post('/validation', (req, res) => {
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
             }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.')
+
+            res.send("Dirección confirmada")
+
             break;
         case '2':
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
             },'Usted acaba de confirmar que su dirección es incorrecta, procederemos a editar su dirección')
+
+            res.send("Dirección incorrecta")
+
             break;
         default:
             twiml.say('Opción no válida. Por favor, intenta de nuevo.')
