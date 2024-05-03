@@ -40,15 +40,7 @@ router.post('/call', async (req, res) => {
                     language: 'es',
                     voice: 'Polly.Mia-Neural'
                 },
-                'Por favor marque el número 1, para confirmar que está correcta la dirección.'
-            )
-
-            gather.say(
-                {
-                    language: 'es',
-                    voice: 'Polly.Mia-Neural'
-                },
-                'O marque el número 2, para cambiar la dirección de envío de su pedido.'
+                'Por favor marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.'
             )
 
             const call = await twilio.calls.create({
