@@ -73,7 +73,7 @@ router.post('/validation', (req, res) => {
     
     const digitPressed = req.body.Digits;
     
-    switch (digitPressed) {
+    switch (digitPressed) { 
         case '1':
             twiml.say({
                 language: 'es',
