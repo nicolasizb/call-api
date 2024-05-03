@@ -31,7 +31,7 @@ router.post('/call', async (req, res) => {
 
             const gather = twiml.gather({
                 numDigits: 1,
-                action: '/validation', // Ruta para manejar la validación
+                action: 'https://call-api-phi.vercel.app/validation', // Ruta para manejar la validación
                 method: 'POST'
             })
 
