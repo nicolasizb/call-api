@@ -53,7 +53,16 @@ router.post('/call', async (req, res) => {
 
             console.log(call.sid)
 
-            res.status(200).json({ digitPressed: null });
+            const waitForDigit = new Promise(resolve => {
+                router.post('https://call-api-phi.vercel.app/validation', (req, res) => {
+                    digitPressed = req.body.Digits;
+                    resolve();
+                });
+            });
+
+            await waitForDigit;
+
+            res.status(200).json({ digitPressed });
             
         } catch (error) {
             console.error(error)
