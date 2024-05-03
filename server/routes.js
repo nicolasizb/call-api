@@ -31,7 +31,7 @@ router.post('/call', async (req, res) => {
 
             const gather = twiml.gather({
                 numDigits: 1,
-                action: 'https://flame-harrier-8893.twil.io/validation',
+                action: 'https://call-api-phi.vercel.app/validation',
                 method: 'POST'
             })
 
@@ -55,16 +55,44 @@ router.post('/call', async (req, res) => {
                 twiml: twiml.toString(),
                 to: clientNumber,
                 from: supportNumber
-            });
+            })
 
             console.log(call.sid)
 
             res.type('text/xml').send(twiml.toString())
+            
         } catch (error) {
             console.error(error)
             res.status(500).send('Error al realizar la llamada')
         }
     }
+})
+
+router.post('/validation', (req, res) => {
+    const twiml = new VoiceResponse()
+    
+    const digitPressed = req.body.Digits
+    
+    switch (digitPressed) {
+        case '1':
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.')
+            break;
+        case '2':
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            },'Usted acaba de confirmar que su dirección es incorrecta, procederemos a editar su dirección')
+            break;
+        default:
+            twiml.say('Opción no válida. Por favor, intenta de nuevo.')
+            break;
+    }
+    
+    res.type('text/xml')
+    res.send(twiml.toString())
 })
 
 module.exports = router
