@@ -26,12 +26,12 @@ router.post('/call', async (req, res) => {
                     language: 'es',
                     voice: 'Polly.Mia-Neural'
                 },
-                `Hola ${firstName} ${lastName}, lo llamamos desde la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Su dirección es ${addressOne} ${addressDetails} en ${city}?`
+                `Hola ${firstName} ${lastName}, lo llamamos desde la tienda ${store} para confirmar la direcciÃ³n de envÃ­o de su pedido. Â¿Su direcciÃ³n es ${addressOne} ${addressDetails} en ${city}?`
             )
 
             const gather = twiml.gather({
                 numDigits: 1,
-                action: 'https://call-api-phi.vercel.app/validation', // Ruta para manejar la validación
+                action: 'https://call-api-phi.vercel.app/validation',
                 method: 'POST'
             })
 
@@ -40,7 +40,7 @@ router.post('/call', async (req, res) => {
                     language: 'es',
                     voice: 'Polly.Mia-Neural'
                 },
-                'Por favor marque el número 1, para confirmar que está correcta la dirección.'
+                'Por favor marque el nÃºmero 1, para confirmar que estÃ¡ correcta la direcciÃ³n.'
             )
 
             gather.say(
@@ -48,7 +48,7 @@ router.post('/call', async (req, res) => {
                     language: 'es',
                     voice: 'Polly.Mia-Neural'
                 },
-                'O marque el número 2, para cambiar la dirección de envío de su pedido.'
+                'O marque el nÃºmero 2, para cambiar la direcciÃ³n de envÃ­o de su pedido.'
             )
 
             const call = await twilio.calls.create({
@@ -59,8 +59,7 @@ router.post('/call', async (req, res) => {
 
             console.log(call.sid)
 
-            // Enviar TwiML como respuesta
-            res.type('text/xml').send(twiml.toString());
+            res.type('text/xml').send(twiml.toString())
             
         } catch (error) {
             console.error(error)
@@ -79,29 +78,27 @@ router.post('/validation', (req, res) => {
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.')
+            }, 'Usted acaba de confirmar que la direcciÃ³n mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envÃ­o.')
 
-            // Devolver la respuesta adecuada
-            res.send(twiml.toString())
+            res.send("DirecciÃ³n confirmada")
 
             break;
         case '2':
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            },'Usted acaba de confirmar que su dirección es incorrecta, procederemos a editar su dirección')
+            },'Usted acaba de confirmar que su direcciÃ³n es incorrecta, procederemos a editar su direcciÃ³n')
 
-            // Devolver la respuesta adecuada
-            res.send(twiml.toString())
+            res.send("DirecciÃ³n incorrecta")
 
             break;
         default:
-            twiml.say('Opción no válida. Por favor, intenta de nuevo.')
-
-            // Devolver la respuesta adecuada
-            res.send(twiml.toString())
+            twiml.say('OpciÃ³n no vÃ¡lida. Por favor, intenta de nuevo.')
             break;
     }
+    
+    res.type('text/xml')
+    res.send(twiml.toString())
 })
 
 module.exports = router
