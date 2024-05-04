@@ -32,8 +32,7 @@ router.post('/call', async (req, res) => {
             const gather = twiml.gather({
                 numDigits: 1,
                 action: 'https://call-api-phi.vercel.app/validation',
-                method: 'POST'
-            })
+            }, validDigit)
 
             gather.say(
                 {
@@ -60,10 +59,12 @@ router.post('/call', async (req, res) => {
     }
 })
 
-router.post('/validation', (req, res) => {
+function validDigit() {
     const twiml = new VoiceResponse()
     
     const digitPressed = req.body.Digits;
+
+    console.log(digitPressed)
 
     switch (digitPressed) { 
         case '1':
@@ -87,6 +88,8 @@ router.post('/validation', (req, res) => {
     }
     
     res.type('text/xml').send(twiml.toString())
-})
+} 
+
+router.post('/validation', validDigit)
 
 module.exports = router
