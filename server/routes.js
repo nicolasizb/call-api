@@ -53,6 +53,15 @@ router.post('/call', async (req, res) => {
 
             console.log(call.sid)
 
+            await new Promise(resolve => {
+                const interval = setInterval(() => {
+                    if (digitPressed !== null) {
+                        clearInterval(interval)
+                        resolve()
+                    }
+                }, 1000)
+            })
+
             res.status(200).json({ digitStatus: digitPressed })
         } catch (error) {
             console.error(error)
@@ -61,7 +70,7 @@ router.post('/call', async (req, res) => {
     }
 })
 
-router.post('/validation', (req, res) => {
+router.post('/validation', async (req, res) => {
     const twiml = new VoiceResponse()
     
     digitPressed = req.body.Digits;
