@@ -91,7 +91,7 @@ router.post('/change-address', async (req, res) => {
     try {
         const clientAddress = req.body.SpeechResult;
 
-        const twiml = new VoiceResponse(); // Definir twiml aquí
+        const twiml = new VoiceResponse();
 
         const gather = twiml.gather({
             numDigits: 1,
@@ -100,7 +100,7 @@ router.post('/change-address', async (req, res) => {
         })
         gather.say({
             language: 'es', 
-            voice: 'Polly.Mia-Neural' 
+            voice: 'Polly.Mia-Neural'
         }, `Listo, su dirección es ${clientAddress}?, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`)
 
         res.type('text/xml').send(twiml.toString());
@@ -111,6 +111,8 @@ router.post('/change-address', async (req, res) => {
 });
 
 router.post('/validator-attempts', (req, res) => {
+    const clientAddress = req.body.SpeechResult;
+
     const Attempts = 1; // Inicializar Attempts en 1 si no está presente en el cuerpo de la solicitud
     const maxAttempts = 3; // Máximo de intentos permitidos
 
@@ -131,7 +133,7 @@ router.post('/validator-attempts', (req, res) => {
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.');
+            }, `Usted acaba de confirmar que la dirección ${ clientAddress } es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.}`);
             break;
         case '2':
             const nextAttempt = Attempts + 1;
@@ -147,12 +149,6 @@ router.post('/validator-attempts', (req, res) => {
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
             }, `Por favor, proporcione la dirección correcta después del tono. Este es su intento número ${nextAttempt}.`);
-            break;
-        default:
-            twiml.say({
-                language: 'es',
-                voice: 'Polly.Mia-Neural'
-            }, 'Opción no válida. Por favor, intenta de nuevo.');
             break;
     }
 
