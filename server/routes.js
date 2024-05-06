@@ -89,25 +89,41 @@ router.post('/validation', (req, res) => {
 });
 
 router.post('/change-address', async (req, res) => {
-    try {
-        const clientAddress = req.body.SpeechResult;
+    const digitPressed = req.body.Digits;
+    const clientAddress = req.body.SpeechResult;
 
-        const twiml = new VoiceResponse();
+    const twiml = new VoiceResponse();
 
-        const gather = twiml.gather({
-            numDigits: 1,
-            action: 'https://call-api-phi.vercel.app/validator-attempt-two',
-            method: 'POST',
-        })
-        gather.say({
-            language: 'es', 
-            voice: 'Polly.Mia-Neural'
-        }, `Usted indicó que la nueva dirección es ${clientAddress}?, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`)
+    switch (digitPressed) { 
+        case '1':
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, `Usted acaba de confirmar que la dirección ${ clientAddress } es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
+            break;
+        case '2':
+            const gather = twiml.gather({
+                language: 'es-MX',
+                input: 'speech dtmf',
+                speechTimeout: 'auto',
+                numDigits: 1,
+                action: 'https://call-api-phi.vercel.app/validator-attempt-three',
+                method: 'POST',
+                hints: 'Di tu dirección, por favor.',
+                timeout: 10 
+            });
 
-        res.type('text/xml').send(twiml.toString());
-    } catch (error) {
-        console.error(error);
-        res.status(400).json({ error: error.message });
+            gather.say({
+                language: 'es', 
+                voice: 'Polly.Mia-Neural'
+            }, `Usted indicó que la nueva dirección es ${clientAddress}?, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`)
+            break;
+        default:
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Opción no válida. Por favor, intenta de nuevo.');
+            break;
     }
 });
 
@@ -122,7 +138,7 @@ router.post('/validator-attempt-two', (req, res) => {
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.');
+            }, `Usted acaba de confirmar que la dirección ${ clientAddress } es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
             break;
         case '2':
             const gather = twiml.gather({
@@ -162,7 +178,7 @@ router.post('/validator-attempt-three', (req, res) => {
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.');
+            }, `Usted acaba de confirmar que la dirección ${ clientAddress } es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
             break;
         case '2':
             const gather = twiml.gather({
@@ -201,7 +217,7 @@ router.post('/validator-end', (req, res) => {
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.');
+            }, `Usted acaba de confirmar que la dirección ${ clientAddress } es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
             break;
         case '2':
             twiml.say({
