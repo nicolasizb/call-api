@@ -96,7 +96,7 @@ router.post('/realizar-llamada', async (req, res) => {
         const twiml = new VoiceResponse();
         const gather = twiml.gather({
             input: 'speech dtmf',
-            languaje: 'es-MX',
+            language: 'es-MX',
             action: 'https://call-api-phi.vercel.app/respuesta-llamada',
             method: 'POST',
             speechTimeout: 'auto',
@@ -125,11 +125,9 @@ router.post('/realizar-llamada', async (req, res) => {
 
 router.post('/respuesta-llamada', (req, res) => {
     const twiml = new VoiceResponse();
-    let retryCount = parseInt(req.body.RetryCount || 0); // Obtener el contador de intentos y convertirlo a un entero
-
     const digitPressed = req.body.Digits;
-
     const clientAddress = req.body.SpeechResult;
+    let retryCount = parseInt(req.body.RetryCount || 0);
 
     if (digitPressed) {
         switch (digitPressed) {
@@ -145,7 +143,7 @@ router.post('/respuesta-llamada', (req, res) => {
                     const gather = twiml.gather({
                         input: 'speech dtmf',
                         language: 'es-MX',
-                        action: '/respuesta-llamada',
+                        action: 'https://call-api-phi.vercel.app/respuesta-llamada',
                         method: 'POST',
                         speechTimeout: 'auto',
                         hints: 'Di tu dirección, por favor.'
@@ -176,7 +174,7 @@ router.post('/respuesta-llamada', (req, res) => {
             const gather = twiml.gather({
                 input: 'speech dtmf',
                 language: 'es-MX',
-                action: '/respuesta-llamada',
+                action: 'https://call-api-phi.vercel.app/respuesta-llamada',
                 method: 'POST',
                 speechTimeout: 'auto',
                 hints: 'Di tu dirección, por favor.'
@@ -185,7 +183,7 @@ router.post('/respuesta-llamada', (req, res) => {
             gather.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            }, `Su dirección es ${clientAddress}. Por favor, di tu dirección después del tono.`);
+            }, 'Por favor, di tu dirección después del tono.');
         } else { // Si se exceden los 3 intentos
             twiml.say({
                 language: 'es',
