@@ -68,7 +68,8 @@ router.post('/validation', (req, res) => {
                 numDigits: 1,
                 action: 'https://call-api-phi.vercel.app/change-address',
                 method: 'POST',
-                hints: 'Di tu dirección, por favor.'
+                hints: 'Di tu dirección, por favor.',
+                timeout: 10 
             });
 
             gather.say({
@@ -144,7 +145,7 @@ router.post('/validator-attempts', (req, res) => {
                     action: 'https://call-api-phi.vercel.app/validator-attempts',
                     method: 'POST',
                     input: 'dtmf',
-                    timeout: 10 // Timeout in seconds
+                    timeout: 10
                 });
                 gather.say({
                     language: 'es',
