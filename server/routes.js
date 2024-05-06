@@ -125,6 +125,7 @@ router.post('/change-address', async (req, res) => {
             }, 'Opción no válida. Por favor, intenta de nuevo.');
             break;
     }
+    res.type('text/xml').send(twiml.toString())
 });
 
 router.post('/validator-attempt-two', (req, res) => {
@@ -164,6 +165,7 @@ router.post('/validator-attempt-two', (req, res) => {
             }, 'Opción no válida. Por favor, intenta de nuevo.');
             break;
     }
+    res.type('text/xml').send(twiml.toString())
 });
 
 
@@ -204,6 +206,7 @@ router.post('/validator-attempt-three', (req, res) => {
             }, 'Opción no válida. Por favor, intenta de nuevo.');
             break;
     }
+    res.type('text/xml').send(twiml.toString())
 });
 
 router.post('/validator-end', (req, res) => {
@@ -232,6 +235,7 @@ router.post('/validator-end', (req, res) => {
             }, 'Opción no válida. Por favor, intenta de nuevo.');
             break;
     }
+    res.type('text/xml').send(twiml.toString())
 });
 
 module.exports = router;
