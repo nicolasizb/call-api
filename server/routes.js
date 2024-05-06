@@ -7,14 +7,14 @@ const authToken = process.env.AUTH_TOKEN;
 const twilio = require('twilio')(accountSid, authToken);
 
 router.get('/', (req, res) => {
-    res.status(200).json({ res: "All good" });
+    res.status(200).json({ res: "Todo bien" });
 });
 
 router.post('/call', async (req, res) => {    
     try {
         const { clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
         if (!clientNumber || !addressOne || !addressDetails || !city || !store || !firstName || !lastName) {
-            throw new Error("Invalid data");
+            throw new Error("Datos inválidos");
         }
 
         const twiml = new VoiceResponse();
@@ -101,7 +101,7 @@ router.post('/change-address', async (req, res) => {
         gather.say({
             language: 'es', 
             voice: 'Polly.Mia-Neural'
-        }, `Listo, su dirección es ${clientAddress}?, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`)
+        }, `Su dirección es ${clientAddress}?, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`)
 
         res.type('text/xml').send(twiml.toString());
     } catch (error) {
@@ -113,13 +113,13 @@ router.post('/change-address', async (req, res) => {
 router.post('/validator-attempts', (req, res) => {
     const clientAddress = req.body.SpeechResult;
 
-    const Attempts = 1; // Inicializar Attempts en 1 si no está presente en el cuerpo de la solicitud
-    const maxAttempts = 3; // Máximo de intentos permitidos
+    let attempts = parseInt(req.body.Attempts || 1); // Initialize attempts to 1 if not present in the request body
+    const maxAttempts = 3; // Maximum allowed attempts
 
-    let twiml = new VoiceResponse();
+    const twiml = new VoiceResponse();
 
-    // Verificar si se superó el máximo de intentos permitidos
-    if (Attempts > maxAttempts) {
+    // Check if maximum attempts allowed is exceeded
+    if (attempts > maxAttempts) {
         twiml.say({
             language: 'es',
             voice: 'Polly.Mia-Neural'
@@ -133,17 +133,17 @@ router.post('/validator-attempts', (req, res) => {
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            }, `Usted acaba de confirmar que la dirección ${ clientAddress } es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.}`);
+            }, `Usted acaba de confirmar que la dirección ${clientAddress} es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
             break;
         case '2':
-            const nextAttempt = Attempts + 1;
+            const nextAttempt = attempts + 1;
             const gather = twiml.gather({
                 language: 'es-MX',
                 numDigits: 1,
                 action: 'https://call-api-phi.vercel.app/validator-attempts',
                 method: 'POST',
                 input: 'dtmf',
-                timeout: 10 // Tiempo de espera en segundos
+                timeout: 10 // Timeout in seconds
             });
             gather.say({
                 language: 'es',
@@ -152,11 +152,11 @@ router.post('/validator-attempts', (req, res) => {
             break;
     }
 
-    // Agregar el número de intentos al objeto de respuesta para el siguiente intento
+    // Add attempts number to the response object for the next attempt
     twiml.redirect({
         method: 'POST'
     }, 'https://call-api-phi.vercel.app/validator-attempts', {
-        Attempts: Attempts + 1
+        Attempts: attempts + 1
     });
 
     res.type('text/xml').send(twiml.toString());
