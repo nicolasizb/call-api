@@ -97,7 +97,7 @@ router.post('/realizar-llamada', async (req, res) => {
         const gather = twiml.gather({
             input: 'speech dtmf',
             language: 'es-MX',
-            action: '/respuesta-llamada',
+            action: 'https://call-api-phi.vercel.app/respuesta-llamada',
             method: 'POST',
             speechTimeout: 'auto',
             hints: 'Di tu dirección, por favor.'
