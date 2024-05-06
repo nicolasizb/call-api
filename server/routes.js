@@ -109,7 +109,6 @@ router.post('/change-address', async (req, res) => {
 
 router.post('/validator-attempt-two', async (req, res) => {
     const digitPressed = req.body.Digits;
-    const clientAddress = req.query.SpeechResult;
 
     const twiml = new VoiceResponse();
 
@@ -118,7 +117,7 @@ router.post('/validator-attempt-two', async (req, res) => {
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            }, `Usted acaba de confirmar que la dirección ${ clientAddress } es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
+            }, `Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
             break;
         case '2':
             const gather = twiml.gather({
@@ -126,7 +125,7 @@ router.post('/validator-attempt-two', async (req, res) => {
                 input: 'speech dtmf',
                 speechTimeout: 'auto',
                 numDigits: 1,
-                action: `https://call-api-phi.vercel.app/validator-attempt-three?SpeechResult=${clientAddress}`,
+                action: `https://call-api-phi.vercel.app/validator-attempt-three`,
                 method: 'POST',
                 hints: 'Di tu dirección, por favor.',
                 timeout: 10 
@@ -135,7 +134,7 @@ router.post('/validator-attempt-two', async (req, res) => {
             gather.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            },`Usted indicó que la dirección ${clientAddress} es incorrecta, por favor dicte de nuevo su dirección de envío`);
+            },`Usted indicó que la dirección es incorrecta, por favor dicte de nuevo su dirección de envío`);
             break;
         default:
             twiml.say({
@@ -149,13 +148,13 @@ router.post('/validator-attempt-two', async (req, res) => {
 
 
 router.post('/validator-attempt-three', async (req, res) => {
-    const clientAddress = req.query.SpeechResult;
+    const clientAddress = req.body.SpeechResult;
 
     const twiml = new VoiceResponse();
 
     const gather = twiml.gather({
         numDigits: 1,
-        action: `https://call-api-phi.vercel.app/validator-attempt-four?SpeechResult=${clientAddress}`,
+        action: `https://call-api-phi.vercel.app/validator-attempt-four`,
         method: 'POST',
         timeout: 10
     });
@@ -163,14 +162,13 @@ router.post('/validator-attempt-three', async (req, res) => {
     gather.say({
         language: 'es',
         voice: 'Polly.Mia-Neural'
-    }, `Usted indicó que dirección mencionada es incorrecta, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`);
+    }, `Usted indicó la dirección ${ clientAddress }, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`);
 
     res.type('text/xml').send(twiml.toString())
 });
 
 router.post('/validator-attempt-four', async (req, res) => {
     const digitPressed = req.body.Digits;
-    const clientAddress = req.query.SpeechResult;
 
     const twiml = new VoiceResponse();
 
@@ -179,7 +177,7 @@ router.post('/validator-attempt-four', async (req, res) => {
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            }, `Usted acaba de confirmar que la dirección ${ clientAddress } es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
+            }, `Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
             break;
         case '2':
             const gather = twiml.gather({
@@ -187,7 +185,7 @@ router.post('/validator-attempt-four', async (req, res) => {
                 input: 'speech dtmf',
                 speechTimeout: 'auto',
                 numDigits: 1,
-                action: `https://call-api-phi.vercel.app/validator-attempt-five?SpeechResult=${clientAddress}`,
+                action: `https://call-api-phi.vercel.app/validator-attempt-five`,
                 method: 'POST',
                 hints: 'Di tu dirección, por favor.',
                 timeout: 10 
@@ -196,7 +194,7 @@ router.post('/validator-attempt-four', async (req, res) => {
             gather.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            },`Usted indicó que la dirección ${clientAddress} es incorrecta, por favor dicte de nuevo su dirección de envío`);
+            },`Usted indicó que la dirección es incorrecta, por favor dicte de nuevo su dirección de envío`);
             break;
         default:
             twiml.say({
@@ -209,13 +207,13 @@ router.post('/validator-attempt-four', async (req, res) => {
 });
 
 router.post('/validator-attempt-five', async (req, res) => {
-    const clientAddress = req.query.SpeechResult;
+    const clientAddress = req.body.SpeechResult;
 
     const twiml = new VoiceResponse();
 
     const gather = twiml.gather({
         numDigits: 1,
-        action: `https://call-api-phi.vercel.app/validator-end?SpeechResult=${clientAddress}`,
+        action: `https://call-api-phi.vercel.app/validator-end`,
         method: 'POST',
         timeout: 10
     });
@@ -223,7 +221,7 @@ router.post('/validator-attempt-five', async (req, res) => {
     gather.say({
         language: 'es',
         voice: 'Polly.Mia-Neural'
-    }, `Usted indicó la dirección ${ clientAddress } es incorrecta, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`);
+    }, `Usted indicó la dirección ${ clientAddress }, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`);
 
     res.type('text/xml').send(twiml.toString())
 });
@@ -239,13 +237,13 @@ router.post('/validator-end', async (req, res) => {
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            }, `Usted acaba de confirmar que la dirección ${ clientAddress } es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
+            }, `Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
             break;
         case '2':
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            },`Usted indicó que la dirección ${clientAddress} es incorrecta, una persona se comunicará con usted pronto para confirmar la dirección de envío`);
+            },`Usted indicó que la dirección mencionada es incorrecta, una persona se comunicará con usted pronto para confirmar la dirección de envío`);
             break;
         default:
             twiml.say({
