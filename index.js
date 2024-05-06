@@ -16,8 +16,6 @@ function serverInit() {
   app.listen(port, "0.0.0.0", function () {
     // ...
   });
-
-  // console.log("Server is alive!!");
 }
 
 serverInit();

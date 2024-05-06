@@ -10,8 +10,8 @@ router.get('/', (req, res) => {
     res.status(200).json({ res: "All good" })
 })
 
-router.post('/call', async (req, res) => {
-    
+router.post('/call', async (req, res) => {    
+
     if (!req.body.clientNumber || !req.body.addressOne || !req.body.addressDetails || !req.body.city || !req.body.city || !req.body.store || !req.body.firstName || !req.body.lastName ) {
         res.status(400).json({ error: "Invalid data" })
     } else {
@@ -32,6 +32,7 @@ router.post('/call', async (req, res) => {
             const gather = twiml.gather({
                 numDigits: 1,
                 action: 'https://call-api-phi.vercel.app/validation',
+                method: 'POST'
             })
 
             gather.say(
@@ -59,7 +60,7 @@ router.post('/call', async (req, res) => {
     }
 })
 
-function validDigit(req, res) {
+router.post('/validation', (req, res) => {
     const twiml = new VoiceResponse()
     
     const digitPressed = req.body.Digits;
@@ -88,8 +89,6 @@ function validDigit(req, res) {
     }
     
     res.type('text/xml').send(twiml.toString())
-} 
-
-router.post('/validation', validDigit)
+})
 
 module.exports = router
