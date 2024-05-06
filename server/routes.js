@@ -96,7 +96,7 @@ router.post('/realizar_llamada', async (req, res) => {
         const twiml = new VoiceResponse();
         const gather = twiml.gather({
             input: 'speech dtmf',
-            action: '/respuesta_llamada',
+            action: 'https://call-api-phi.vercel.app/respuesta-llamada',
             method: 'POST',
             speechTimeout: 'auto',
             hints: 'Di tu dirección, por favor.'
@@ -122,7 +122,7 @@ router.post('/realizar_llamada', async (req, res) => {
     }
 });
 
-router.post('/respuesta_llamada', (req, res) => {
+router.post('/respuesta-llamada', (req, res) => {
     const twiml = new VoiceResponse();
     const clientAddress = req.body.SpeechResult;
     
@@ -131,8 +131,7 @@ router.post('/respuesta_llamada', (req, res) => {
         voice: 'Polly.Mia-Neural'
     },`Su dirección es ${clientAddress}. Oprima opción 1 si es correcto y opción 2 si desea repetir su dirección.`);
     
-    res.type('text/xml');
-    res.send(twiml.toString());
+    res.type('text/xml').send(twiml.toString());
 });
 
 module.exports = router;
