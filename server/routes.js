@@ -91,6 +91,7 @@ router.post('/validation', (req, res) => {
 
 router.post('/realizar-llamada', async (req, res) => {
     const clientNumber = "+573102950378";
+    let retryCount = 0; // Inicializamos el contador de intentos
 
     try {
         const twiml = new VoiceResponse();
@@ -125,9 +126,10 @@ router.post('/realizar-llamada', async (req, res) => {
 
 router.post('/respuesta-llamada', (req, res) => {
     const twiml = new VoiceResponse();
+    let retryCount = parseInt(req.body.RetryCount || 0); // Obtener el contador de intentos y convertirlo a un entero
+
     const digitPressed = req.body.Digits;
     const clientAddress = req.body.SpeechResult;
-    let retryCount = parseInt(req.body.RetryCount || 0);
 
     if (digitPressed) {
         switch (digitPressed) {
@@ -183,7 +185,7 @@ router.post('/respuesta-llamada', (req, res) => {
             gather.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            }, 'Por favor, di tu dirección después del tono.');
+            }, `Su dirección es ${clientAddress}. Por favor, di tu dirección después del tono.`);
         } else { // Si se exceden los 3 intentos
             twiml.say({
                 language: 'es',
@@ -193,8 +195,6 @@ router.post('/respuesta-llamada', (req, res) => {
     }
 
     res.type('text/xml').send(twiml.toString());
-})
-
-
+});
 
 module.exports = router;
