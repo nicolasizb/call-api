@@ -97,7 +97,6 @@ router.post('/change-address', async (req, res) => {
         numDigits: 1,
         action: `https://call-api-phi.vercel.app/validator-attempt-two?SpeechResult=${clientAddress}`,
         method: 'POST',
-        timeout: 10
     });
 
     gather.say({
@@ -108,7 +107,7 @@ router.post('/change-address', async (req, res) => {
     res.type('text/xml').send(twiml.toString())
 });
 
-router.post('/validator-attempt-two', (req, res) => {
+router.post('/validator-attempt-two', async (req, res) => {
     const digitPressed = req.body.Digits;
     const clientAddress = req.query.SpeechResult;
 
@@ -149,7 +148,7 @@ router.post('/validator-attempt-two', (req, res) => {
 });
 
 
-router.post('/validator-attempt-three', (req, res) => {
+router.post('/validator-attempt-three', async (req, res) => {
     const clientAddress = req.query.SpeechResult;
 
     const twiml = new VoiceResponse();
@@ -169,7 +168,7 @@ router.post('/validator-attempt-three', (req, res) => {
     res.type('text/xml').send(twiml.toString())
 });
 
-router.post('/validator-attempt-four', (req, res) => {
+router.post('/validator-attempt-four', async (req, res) => {
     const digitPressed = req.body.Digits;
     const clientAddress = req.query.SpeechResult;
 
@@ -209,7 +208,7 @@ router.post('/validator-attempt-four', (req, res) => {
     res.type('text/xml').send(twiml.toString())
 });
 
-router.post('/validator-attempt-five', (req, res) => {
+router.post('/validator-attempt-five', async (req, res) => {
     const clientAddress = req.query.SpeechResult;
 
     const twiml = new VoiceResponse();
@@ -229,7 +228,7 @@ router.post('/validator-attempt-five', (req, res) => {
     res.type('text/xml').send(twiml.toString())
 });
 
-router.post('/validator-end', (req, res) => {
+router.post('/validator-end', async (req, res) => {
     const digitPressed = req.body.Digits;
     const clientAddress = req.query.SpeechResult;
 
