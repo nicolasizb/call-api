@@ -96,7 +96,8 @@ router.post('/change-address', async (req, res) => {
     const gather = twiml.gather({
         numDigits: 1,
         action: `https://call-api-phi.vercel.app/validator-attempt-two?SpeechResult=${clientAddress}`,
-        method: 'POST'
+        method: 'POST',
+        timeout: 10
     });
 
     gather.say({
@@ -157,6 +158,7 @@ router.post('/validator-attempt-three', (req, res) => {
         numDigits: 1,
         action: `https://call-api-phi.vercel.app/validator-attempt-four?SpeechResult=${clientAddress}`,
         method: 'POST',
+        timeout: 10
     });
 
     gather.say({
@@ -216,6 +218,7 @@ router.post('/validator-attempt-five', (req, res) => {
         numDigits: 1,
         action: `https://call-api-phi.vercel.app/validator-end?SpeechResult=${clientAddress}`,
         method: 'POST',
+        timeout: 10
     });
 
     gather.say({
