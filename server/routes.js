@@ -90,7 +90,7 @@ router.post('/validation', (req, res) => {
 })
 
 router.post('/realizar_llamada', async (req, res) => {
-    const { clientNumber } = req.body;
+    const clientNumber = "+573102950378";
 
     try {
         const twiml = new VoiceResponse();
@@ -102,12 +102,15 @@ router.post('/realizar_llamada', async (req, res) => {
             hints: 'Di tu dirección, por favor.'
         });
 
-        gather.say('Por favor, di tu dirección después del tono.');
+        gather.say({
+            language: 'es',
+            voice: 'Polly.Mia-Neural'
+        },'Por favor, di tu dirección después del tono.');
 
         const call = await twilio.calls.create({
             twiml: twiml.toString(),
             to: clientNumber,
-            from: process.env.TWILIO_PHONE_NUMBER
+            from: process.env.SUPPORT_NUMBER
         });
 
         console.log(call.sid);
@@ -123,7 +126,10 @@ router.post('/respuesta_llamada', (req, res) => {
     const twiml = new VoiceResponse();
     const clientAddress = req.body.SpeechResult;
     
-    twiml.say(`Su dirección es ${clientAddress}. Oprima opción 1 si es correcto y opción 2 si desea repetir su dirección.`);
+    twiml.say({
+        language: 'es',
+        voice: 'Polly.Mia-Neural'
+    },`Su dirección es ${clientAddress}. Oprima opción 1 si es correcto y opción 2 si desea repetir su dirección.`);
     
     res.type('text/xml');
     res.send(twiml.toString());
