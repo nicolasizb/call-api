@@ -111,55 +111,61 @@ router.post('/change-address', async (req, res) => {
 });
 
 router.post('/validator-attempts', (req, res) => {
-    const clientAddress = req.body.SpeechResult;
+    try {
+        const clientAddress = req.body.SpeechResult;
 
-    let attempts = parseInt(req.body.Attempts || 1); // Initialize attempts to 1 if not present in the request body
-    const maxAttempts = 3; // Maximum allowed attempts
+        let attempts = parseInt(req.body.Attempts || 1); // Initialize attempts to 1 if not present in the request body
+        const maxAttempts = 3; // Maximum allowed attempts
 
-    const twiml = new VoiceResponse();
+        const twiml = new VoiceResponse();
 
-    // Check if maximum attempts allowed is exceeded
-    if (attempts > maxAttempts) {
-        twiml.say({
-            language: 'es',
-            voice: 'Polly.Mia-Neural'
-        }, 'Lo siento, ha superado el número máximo de intentos. Por favor, vuelva a intentarlo más tarde.');
-        return res.type('text/xml').send(twiml.toString());
-    }
-
-    const digitPressed = req.body.Digits;
-    switch (digitPressed) {
-        case '1':
+        // Check if maximum attempts allowed is exceeded
+        if (attempts > maxAttempts) {
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            }, `Usted acaba de confirmar que la dirección ${clientAddress} es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
-            break;
-        case '2':
-            const nextAttempt = attempts + 1;
-            const gather = twiml.gather({
-                language: 'es-MX',
-                numDigits: 1,
-                action: 'https://call-api-phi.vercel.app/validator-attempts',
-                method: 'POST',
-                input: 'dtmf',
-                timeout: 10 // Timeout in seconds
-            });
-            gather.say({
-                language: 'es',
-                voice: 'Polly.Mia-Neural'
-            }, `Por favor, proporcione la dirección correcta después del tono. Este es su intento número ${nextAttempt}.`);
-            break;
+            }, 'Lo siento, ha superado el número máximo de intentos. Por favor, vuelva a intentarlo más tarde.');
+            return res.type('text/xml').send(twiml.toString());
+        }
+
+        const digitPressed = req.body.Digits;
+        switch (digitPressed) {
+            case '1':
+                twiml.say({
+                    language: 'es',
+                    voice: 'Polly.Mia-Neural'
+                }, `Usted acaba de confirmar que la dirección ${clientAddress} es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
+                break;
+            case '2':
+                const nextAttempt = attempts + 1;
+                const gather = twiml.gather({
+                    language: 'es-MX',
+                    numDigits: 1,
+                    action: 'https://call-api-phi.vercel.app/validator-attempts',
+                    method: 'POST',
+                    input: 'dtmf',
+                    timeout: 10 // Timeout in seconds
+                });
+                gather.say({
+                    language: 'es',
+                    voice: 'Polly.Mia-Neural'
+                }, `Por favor, proporcione la dirección correcta después del tono. Este es su intento número ${nextAttempt}.`);
+                break;
+        }
+
+        // Agregar el número de intentos al objeto de respuesta para el siguiente intento
+        twiml.redirect({
+            method: 'POST'
+        }, 'https://call-api-phi.vercel.app/validator-attempts', {
+            Attempts: attempts + 1
+        });
+
+        res.type('text/xml').send(twiml.toString());
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ error: error.message });
     }
-
-    // Add attempts number to the response object for the next attempt
-    twiml.redirect({
-        method: 'POST'
-    }, 'https://call-api-phi.vercel.app/validator-attempts', {
-        Attempts: attempts + 1
-    });
-
-    res.type('text/xml').send(twiml.toString());
 });
+
 
 module.exports = router;
