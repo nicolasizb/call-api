@@ -62,6 +62,7 @@ router.post('/validation', (req, res) => {
             break;
         case '2':
             const gather = twiml.gather({
+                language: 'es-MX',
                 input: 'speech dtmf',
                 speechTimeout: 'auto',
                 numDigits: 1,
@@ -135,6 +136,7 @@ router.post('/validator-attempts', (req, res) => {
         case '2':
             const nextAttempt = Attempts + 1;
             const gather = twiml.gather({
+                language: 'es-MX',
                 numDigits: 1,
                 action: 'https://call-api-phi.vercel.app/validator-attempts',
                 method: 'POST',
