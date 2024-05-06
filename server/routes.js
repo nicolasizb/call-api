@@ -73,7 +73,7 @@ router.post('/validation', (req, res) => {
             gather.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            },'Usted acaba de confirmar que su dirección es incorrecta, por favor dicte su dirección de envío después del tono');
+            },'Usted indicó que su dirección es incorrecta, por favor dicte su dirección de envío después del tono');
             break;
         default:
             twiml.say({
@@ -86,54 +86,73 @@ router.post('/validation', (req, res) => {
     res.type('text/xml').send(twiml.toString());
 });
 
-let counterAttempts = {}; // Define counter outside the route handler to maintain its state
-
 router.post('/change-address', async (req, res) => {
-    const digitPressed = req.body.Digits;
     const clientAddress = req.body.SpeechResult;
 
-    const twiml = new VoiceResponse();
-    
-    if (!counterAttempts[req.body.CallSid]) {
-        counterAttempts[req.body.CallSid] = 0;
+    const gather = twiml.gather({
+        numDigits: 1,
+        action: 'https://call-api-phi.vercel.app/validator-attempts',
+        method: 'POST',
+    })
+    gather.say({
+        language: 'es', 
+        voice: 'Polly.Mia-Neural' 
+    }, `Listo, su dirección es ${clientAddress}?, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`)
+
+    res.type('text/xml').send(twiml.toString());
+});
+
+router.post('/validator-attempts', (req, res) => {
+    const Attempts = 1; // Inicializar Attempts en 1 si no está presente en el cuerpo de la solicitud
+    const maxAttempts = 3; // Máximo de intentos permitidos
+
+    let twiml = new VoiceResponse();
+
+    // Verificar si se superó el máximo de intentos permitidos
+    if (Attempts > maxAttempts) {
+        twiml.say({
+            language: 'es',
+            voice: 'Polly.Mia-Neural'
+        }, 'Lo siento, ha superado el número máximo de intentos. Por favor, vuelva a intentarlo más tarde.');
+        return res.type('text/xml').send(twiml.toString());
     }
 
+    const digitPressed = req.body.Digits;
     switch (digitPressed) {
         case '1':
-            twiml.say({ 
-                language: 'es', 
-                voice: 'Polly.Mia-Neural' 
-            }, `Usted acaba de confirmar que la dirección ${clientAddress} es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.');
             break;
         case '2':
-            if (counterAttempts[req.body.CallSid] <= 3) {
-                const gather = twiml.gather({
-                    input: 'speech dtmf',
-                    language: 'es-MX',
-                    action: 'https://call-api-phi.vercel.app/change-address',
-                    method: 'POST',
-                    speechTimeout: 'auto',
-                    hints: 'Di tu dirección, por favor.'
-                });
-
-                gather.say({
-                    language: 'es',
-                    voice: 'Polly.Mia-Neural'
-                }, `Por favor, dicte su dirección de nuevo después del tono.`);
-                twiml.redirect({ method: 'POST' }, 'https://call-api-phi.vercel.app/change-address');
-                counterAttempts[req.body.CallSid]++;
-            } else {
-                twiml.say({
-                    language: 'es',
-                    voice: 'Polly.Mia-Neural'
-                }, `Excediste la cantidad de intentos para cambiar la dirección de envío`);
-            }
+            const nextAttempt = Attempts + 1;
+            const gather = twiml.gather({
+                numDigits: 1,
+                action: '/validator-attempts',
+                method: 'POST',
+                input: 'dtmf',
+                timeout: 10 // Tiempo de espera en segundos
+            });
+            gather.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, `Por favor, proporcione la dirección correcta después del tono. Este es su intento número ${nextAttempt}.`);
             break;
         default:
-            twiml.say({ language: 'es', voice: 'Polly.Mia-Neural' }, 'Opción no válida. Por favor, intenta de nuevo.');
-            twiml.redirect({ method: 'POST' }, 'https://call-api-phi.vercel.app/change-address');
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Opción no válida. Por favor, intenta de nuevo.');
             break;
     }
+
+    // Agregar el número de intentos al objeto de respuesta para el siguiente intento
+    twiml.redirect({
+        method: 'POST'
+    }, 'https://call-api-phi.vercel.app/validator-attempts', {
+        Attempts: Attempts + 1
+    });
 
     res.type('text/xml').send(twiml.toString());
 });
