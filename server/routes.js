@@ -87,19 +87,26 @@ router.post('/validation', (req, res) => {
 });
 
 router.post('/change-address', async (req, res) => {
-    const clientAddress = req.body.SpeechResult;
+    try {
+        const clientAddress = req.body.SpeechResult;
 
-    const gather = twiml.gather({
-        numDigits: 1,
-        action: 'https://call-api-phi.vercel.app/validator-attempts',
-        method: 'POST',
-    })
-    gather.say({
-        language: 'es', 
-        voice: 'Polly.Mia-Neural' 
-    }, `Listo, su dirección es ${clientAddress}?, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`)
+        const twiml = new VoiceResponse(); // Definir twiml aquí
 
-    res.type('text/xml').send(twiml.toString());
+        const gather = twiml.gather({
+            numDigits: 1,
+            action: 'https://call-api-phi.vercel.app/validator-attempts',
+            method: 'POST',
+        })
+        gather.say({
+            language: 'es', 
+            voice: 'Polly.Mia-Neural' 
+        }, `Listo, su dirección es ${clientAddress}?, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`)
+
+        res.type('text/xml').send(twiml.toString());
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ error: error.message });
+    }
 });
 
 router.post('/validator-attempts', (req, res) => {
@@ -129,7 +136,7 @@ router.post('/validator-attempts', (req, res) => {
             const nextAttempt = Attempts + 1;
             const gather = twiml.gather({
                 numDigits: 1,
-                action: '/validator-attempts',
+                action: 'https://call-api-phi.vercel.app/validator-attempts',
                 method: 'POST',
                 input: 'dtmf',
                 timeout: 10 // Tiempo de espera en segundos
