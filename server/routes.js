@@ -95,7 +95,7 @@ router.post('/change-address', async (req, res) => {
 
     const gather = twiml.gather({
         numDigits: 1,
-        action: 'https://call-api-phi.vercel.app/validator-attempt-two',
+        action: `https://call-api-phi.vercel.app/validator-attempt-two?SpeechResult=${clientAddress}`,
         method: 'POST'
     });
 
@@ -109,7 +109,7 @@ router.post('/change-address', async (req, res) => {
 
 router.post('/validator-attempt-two', (req, res) => {
     const digitPressed = req.body.Digits;
-    const clientAddress = req.body.SpeechResult;
+    const clientAddress = req.query.SpeechResult;
 
     const twiml = new VoiceResponse();
 
@@ -126,7 +126,7 @@ router.post('/validator-attempt-two', (req, res) => {
                 input: 'speech dtmf',
                 speechTimeout: 'auto',
                 numDigits: 1,
-                action: 'https://call-api-phi.vercel.app/validator-attempt-three',
+                action: `https://call-api-phi.vercel.app/validator-attempt-three?SpeechResult=${clientAddress}`,
                 method: 'POST',
                 hints: 'Di tu dirección, por favor.',
                 timeout: 10 
@@ -149,11 +149,13 @@ router.post('/validator-attempt-two', (req, res) => {
 
 
 router.post('/validator-attempt-three', (req, res) => {
+    const clientAddress = req.query.SpeechResult;
+
     const twiml = new VoiceResponse();
 
     const gather = twiml.gather({
         numDigits: 1,
-        action: 'https://call-api-phi.vercel.app/validator-attempt-four',
+        action: `https://call-api-phi.vercel.app/validator-attempt-four?SpeechResult=${clientAddress}`,
         method: 'POST',
     });
 
@@ -167,7 +169,7 @@ router.post('/validator-attempt-three', (req, res) => {
 
 router.post('/validator-attempt-four', (req, res) => {
     const digitPressed = req.body.Digits;
-    const clientAddress = req.body.SpeechResult;
+    const clientAddress = req.query.SpeechResult;
 
     const twiml = new VoiceResponse();
 
@@ -184,7 +186,7 @@ router.post('/validator-attempt-four', (req, res) => {
                 input: 'speech dtmf',
                 speechTimeout: 'auto',
                 numDigits: 1,
-                action: 'https://call-api-phi.vercel.app/validator-attempt-five',
+                action: `https://call-api-phi.vercel.app/validator-attempt-five?SpeechResult=${clientAddress}`,
                 method: 'POST',
                 hints: 'Di tu dirección, por favor.',
                 timeout: 10 
@@ -206,13 +208,13 @@ router.post('/validator-attempt-four', (req, res) => {
 });
 
 router.post('/validator-attempt-five', (req, res) => {
-    const clientAddress = req.body.SpeechResult;
+    const clientAddress = req.query.SpeechResult;
 
     const twiml = new VoiceResponse();
 
     const gather = twiml.gather({
         numDigits: 1,
-        action: 'https://call-api-phi.vercel.app/validator-end',
+        action: `https://call-api-phi.vercel.app/validator-end?SpeechResult=${clientAddress}`,
         method: 'POST',
     });
 
@@ -226,7 +228,7 @@ router.post('/validator-attempt-five', (req, res) => {
 
 router.post('/validator-end', (req, res) => {
     const digitPressed = req.body.Digits;
-    const clientAddress = req.body.SpeechResult;
+    const clientAddress = req.query.SpeechResult;
 
     const twiml = new VoiceResponse();
 
