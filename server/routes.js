@@ -14,9 +14,7 @@ router.post('/call', async (req, res) => {
 
     if (!req.body.clientNumber || !req.body.addressOne || !req.body.addressDetails || !req.body.city || !req.body.city || !req.body.store || !req.body.firstName || !req.body.lastName ) {
         res.status(400).json({ error: "Invalid data" })
-    } else {
-        const supportNumber = process.env.SUPPORT_NUMBER
-        
+    } else {        
         const { clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body
         
         try {
@@ -46,7 +44,7 @@ router.post('/call', async (req, res) => {
             const call = await twilio.calls.create({
                 twiml: twiml.toString(),
                 to: clientNumber,
-                from: supportNumber
+                from: process.env.SUPPORT_NUMBER
             })
 
             console.log(call.sid)
@@ -91,4 +89,44 @@ router.post('/validation', (req, res) => {
     res.type('text/xml').send(twiml.toString())
 })
 
-module.exports = router
+router.post('/realizar_llamada', async (req, res) => {
+    const { clientNumber } = req.body;
+
+    try {
+        const twiml = new VoiceResponse();
+        const gather = twiml.gather({
+            input: 'speech dtmf',
+            action: '/respuesta_llamada',
+            method: 'POST',
+            speechTimeout: 'auto',
+            hints: 'Di tu dirección, por favor.'
+        });
+
+        gather.say('Por favor, di tu dirección después del tono.');
+
+        const call = await twilio.calls.create({
+            twiml: twiml.toString(),
+            to: clientNumber,
+            from: process.env.TWILIO_PHONE_NUMBER
+        });
+
+        console.log(call.sid);
+
+        res.type('text/xml').send(twiml.toString());
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al realizar la llamada');
+    }
+});
+
+router.post('/respuesta_llamada', (req, res) => {
+    const twiml = new VoiceResponse();
+    const clientAddress = req.body.SpeechResult;
+    
+    twiml.say(`Su dirección es ${clientAddress}. Oprima opción 1 si es correcto y opción 2 si desea repetir su dirección.`);
+    
+    res.type('text/xml');
+    res.send(twiml.toString());
+});
+
+module.exports = router;
