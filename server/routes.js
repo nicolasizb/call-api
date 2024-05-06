@@ -89,42 +89,21 @@ router.post('/validation', (req, res) => {
 });
 
 router.post('/change-address', async (req, res) => {
-    const digitPressed = req.body.Digits;
     const clientAddress = req.body.SpeechResult;
 
     const twiml = new VoiceResponse();
 
-    switch (digitPressed) { 
-        case '1':
-            twiml.say({
-                language: 'es',
-                voice: 'Polly.Mia-Neural'
-            }, `Usted acaba de confirmar que la dirección ${ clientAddress } es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`);
-            break;
-        case '2':
-            const gather = twiml.gather({
-                language: 'es-MX',
-                input: 'speech dtmf',
-                speechTimeout: 'auto',
-                numDigits: 1,
-                action: 'https://call-api-phi.vercel.app/validator-attempt-three',
-                method: 'POST',
-                hints: 'Di tu dirección, por favor.',
-                timeout: 10 
-            });
+    const gather = twiml.gather({
+        numDigits: 1,
+        action: 'https://call-api-phi.vercel.app/validator-attempt-two',
+        method: 'POST'
+    });
 
-            gather.say({
-                language: 'es', 
-                voice: 'Polly.Mia-Neural'
-            }, `Usted indicó que la nueva dirección es ${clientAddress}?, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`)
-            break;
-        default:
-            twiml.say({
-                language: 'es',
-                voice: 'Polly.Mia-Neural'
-            }, 'Opción no válida. Por favor, intenta de nuevo.');
-            break;
-    }
+    gather.say({
+        language: 'es',
+        voice: 'Polly.Mia-Neural'
+    }, `Usted indicó la dirección ${ clientAddress }, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`);
+
     res.type('text/xml').send(twiml.toString())
 });
 
@@ -170,6 +149,25 @@ router.post('/validator-attempt-two', (req, res) => {
 
 
 router.post('/validator-attempt-three', (req, res) => {
+    const clientAddress = req.body.SpeechResult;
+
+    const twiml = new VoiceResponse();
+
+    const gather = twiml.gather({
+        numDigits: 1,
+        action: 'https://call-api-phi.vercel.app/validator-attempt-end',
+        method: 'POST',
+    });
+
+    gather.say({
+        language: 'es',
+        voice: 'Polly.Mia-Neural'
+    }, `Usted indicó la dirección ${ clientAddress }, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`);
+
+    res.type('text/xml').send(twiml.toString())
+});
+
+router.post('/validator-attempt-four', (req, res) => {
     const digitPressed = req.body.Digits;
     const clientAddress = req.body.SpeechResult;
 
@@ -188,7 +186,7 @@ router.post('/validator-attempt-three', (req, res) => {
                 input: 'speech dtmf',
                 speechTimeout: 'auto',
                 numDigits: 1,
-                action: 'https://call-api-phi.vercel.app/validator-end',
+                action: 'https://call-api-phi.vercel.app/validator-attempt-five',
                 method: 'POST',
                 hints: 'Di tu dirección, por favor.',
                 timeout: 10 
@@ -206,6 +204,25 @@ router.post('/validator-attempt-three', (req, res) => {
             }, 'Opción no válida. Por favor, intenta de nuevo.');
             break;
     }
+    res.type('text/xml').send(twiml.toString())
+});
+
+router.post('/validator-attempt-five', (req, res) => {
+    const clientAddress = req.body.SpeechResult;
+
+    const twiml = new VoiceResponse();
+
+    const gather = twiml.gather({
+        numDigits: 1,
+        action: 'https://call-api-phi.vercel.app/validator-end',
+        method: 'POST',
+    });
+
+    gather.say({
+        language: 'es',
+        voice: 'Polly.Mia-Neural'
+    }, `Usted indicó la dirección ${ clientAddress }, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`);
+
     res.type('text/xml').send(twiml.toString())
 });
 
