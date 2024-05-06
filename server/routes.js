@@ -149,20 +149,18 @@ router.post('/validator-attempt-two', (req, res) => {
 
 
 router.post('/validator-attempt-three', (req, res) => {
-    const clientAddress = req.body.SpeechResult;
-
     const twiml = new VoiceResponse();
 
     const gather = twiml.gather({
         numDigits: 1,
-        action: 'https://call-api-phi.vercel.app/validator-attempt-end',
+        action: 'https://call-api-phi.vercel.app/validator-attempt-four',
         method: 'POST',
     });
 
     gather.say({
         language: 'es',
         voice: 'Polly.Mia-Neural'
-    }, `Usted indicó la dirección ${ clientAddress }, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`);
+    }, `Usted indicó que dirección mencionada es incorrecta, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`);
 
     res.type('text/xml').send(twiml.toString())
 });
@@ -221,7 +219,7 @@ router.post('/validator-attempt-five', (req, res) => {
     gather.say({
         language: 'es',
         voice: 'Polly.Mia-Neural'
-    }, `Usted indicó la dirección ${ clientAddress }, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`);
+    }, `Usted indicó la dirección ${ clientAddress } es incorrecta, marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.`);
 
     res.type('text/xml').send(twiml.toString())
 });
