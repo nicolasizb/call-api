@@ -125,14 +125,77 @@ router.post('/realizar-llamada', async (req, res) => {
 
 router.post('/respuesta-llamada', (req, res) => {
     const twiml = new VoiceResponse();
+    let retryCount = parseInt(req.body.RetryCount || 0); // Obtener el contador de intentos y convertirlo a un entero
+
+    const digitPressed = req.body.Digits;
+
     const clientAddress = req.body.SpeechResult;
-    
-    twiml.say({
-        language: 'es',
-        voice: 'Polly.Mia-Neural'
-    },`Su dirección es ${ clientAddress }. Oprima opción 1 si es correcto y opción 2 si desea repetir su dirección.`);
-    
+
+    if (digitPressed) {
+        switch (digitPressed) {
+            case '1':
+                twiml.say({
+                    language: 'es',
+                    voice: 'Polly.Mia-Neural'
+                }, 'Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.');
+                break;
+            case '2':
+                if (retryCount < 3) { // Si aún no se han excedido los 3 intentos
+                    // Volver a preguntar la dirección
+                    const gather = twiml.gather({
+                        input: 'speech dtmf',
+                        language: 'es-MX',
+                        action: '/respuesta-llamada',
+                        method: 'POST',
+                        speechTimeout: 'auto',
+                        hints: 'Di tu dirección, por favor.'
+                    });
+
+                    gather.say({
+                        language: 'es',
+                        voice: 'Polly.Mia-Neural'
+                    }, `Su dirección es ${clientAddress}. Por favor, di tu dirección después del tono.`);
+                } else { // Si se exceden los 3 intentos
+                    twiml.say({
+                        language: 'es',
+                        voice: 'Polly.Mia-Neural'
+                    }, 'Ha excedido el número máximo de intentos. Nos pondremos en contacto con usted de otra manera para confirmar la dirección.');
+                }
+                break;
+            default:
+                // Opción no válida
+                twiml.say({
+                    language: 'es',
+                    voice: 'Polly.Mia-Neural'
+                }, 'Opción no válida. Por favor, intenta de nuevo.');
+                break;
+        }
+    } else {
+        if (retryCount < 3) { // Si aún no se han excedido los 3 intentos
+            // Volver a preguntar la dirección
+            const gather = twiml.gather({
+                input: 'speech dtmf',
+                language: 'es-MX',
+                action: '/respuesta-llamada',
+                method: 'POST',
+                speechTimeout: 'auto',
+                hints: 'Di tu dirección, por favor.'
+            });
+
+            gather.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, `Su dirección es ${clientAddress}. Por favor, di tu dirección después del tono.`);
+        } else { // Si se exceden los 3 intentos
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Ha excedido el número máximo de intentos. Nos pondremos en contacto con usted de otra manera para confirmar la dirección.');
+        }
+    }
+
     res.type('text/xml').send(twiml.toString());
-});
+})
+
 
 module.exports = router;
