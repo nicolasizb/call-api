@@ -21,7 +21,7 @@ router.post('/call', async (req, res) => {
         twiml.say({
             language: 'es',
             voice: 'Polly.Mia-Neural'
-        }, `Hola ${firstName} ${lastName || ''}, lo llamamos desde la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`);
+        }, `Hola ${firstName} ${lastName}, lo llamamos desde la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`);
 
         const gather = twiml.gather({
             numDigits: 1,
