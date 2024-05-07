@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
 router.post('/call', async (req, res) => {    
     try {
         const { clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
-        if (!clientNumber || !addressOne || !addressDetails || !city || !store || !firstName || !lastName) {
+        if (!clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
             throw new Error("Datos inválidos");
         }
 
