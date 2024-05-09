@@ -42,10 +42,11 @@ router.post('/call', async (req, res) => {
             voice: 'Polly.Mia-Neural'
         }, 'Por favor marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.');
         const twimlXml = twiml.toString();
+
         await twilio.calls.create({
             twiml: twimlXml,
             to: clientNumber,
-            from: process.env.SUPPORT_NUMBERs
+            from: process.env.SUPPORT_NUMBER
         });
 
         function myPromise() {
@@ -58,7 +59,7 @@ router.post('/call', async (req, res) => {
                 } else {
                     reject("La tarea ha fallado.")
                 }
-            }, 40000)
+            }, 120000)
         });
     }
     
@@ -108,7 +109,7 @@ router.post('/validation', (req, res) => {
             gather.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            },`Marque 1 si autoriza el tratamiento de sus datos para comunicarnos con usted lo más pronto posible o marque 2 para dejar la dirección establecida ${addressGlobal} para el envío.`);
+            },`Marque 1 si autoriza que le escribamos por WhatsApp para el cambio de dirección o marque 2 para confirmar la entrega en la dirección ${addressGlobal}.`);
 
             twiml.pause({ length: 10 });
             twiml.redirect('https://call-api-phi.vercel.app/change-address');
@@ -124,5 +125,27 @@ router.post('/validation', (req, res) => {
     
     res.type('text/xml').send(twiml.toString());
 });
+
+router.post('change-address', (req, res) => {
+    const twiml = new VoiceResponse()
+
+    const digitPressed = req.body.Digits
+
+    switch(digitPressed) {
+        case '1' :
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Nos pondremos en contacto con usted por Whatsapp lo más pronto posible.');
+            break;
+        case '2':
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, `Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`)
+            break;
+    }
+
+})
 
 module.exports = router;
