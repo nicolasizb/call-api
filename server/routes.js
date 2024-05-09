@@ -104,7 +104,7 @@ router.post('/validation', (req, res) => {
             gather.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            },`Usted indicó que su dirección es incorrecta, nos pondremos en contacto con usted por WhatsApp para cambiar su dirección de envío. 
+            },`Usted indicó que su dirección es incorrecta, por favor:
             
             Marque 1 si autoriza que le escribamos por WhatsApp para el cambio de dirección. O marque 2 para confirmar la entrega en la dirección ${addressGlobal}.`);
 
@@ -132,7 +132,7 @@ router.post('/change-address', (req, res) => {
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            }, 'Nos pondremos en contacto con usted por Whatsapp lo más pronto posible.');
+            }, 'Nos pondremos en contacto con usted lo más pronto posible.');
             break;
         case '2':
             twiml.say({
