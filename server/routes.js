@@ -23,16 +23,15 @@ router.post('/call', async (req, res) => {
         if (!clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
             throw new Error("Datos inválidos");
         }
-        const newAddress = `${addressOne} ${addressDetails}`
+        const newAddress = `${addressOne} ${addressDetails}`;
 
-        changeAddress(newAddress)
+        changeAddress(newAddress);
 
         const twiml = new VoiceResponse();
         twiml.say({ 
             language: 'es',
             voice: 'Polly.Mia-Neural'
         }, `Hola ${firstName} ${lastName}, lo llamamos desde la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`);
-
 
         const gather = twiml.gather({
             numDigits: 1,
@@ -54,34 +53,31 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         });
 
-        function myPromise() {
-            return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  if (responseJSON === 1) {
-                    resolve({responseJSON})
-                } else if(responseJSON === 2) {
-                    resolve({responseJSON})
-                } else {
-                    reject("La tarea ha fallado.")
-                }
-            }, 60000)
-        });
-    }
-    
-    myPromise()
-        .then((responseJSON) => {
-            console.log("Success: ", responseJSON)
-            res.status(200).json({ responseJSON })
-        })
-        .catch((err) => {
-            console.error("Error: ", err)
-        })
+        const responseJSON = await myPromise();
 
+        console.log("Success: ", responseJSON);
+        res.status(200).json({ responseJSON });
     } catch (error) {
         console.error(error);       
         res.status(400).json({ error: error.message });
     }
 });
+
+function myPromise() {
+    return new Promise((resolve, reject) => {
+        const interval = setInterval(() => {
+            if (responseJSON === 1 || responseJSON === 2) {
+                clearInterval(interval);
+                resolve(responseJSON);
+            }
+        }, 1000);
+        setTimeout(() => {
+            clearInterval(interval);
+            reject("La tarea ha fallado."); // Reject if no response after 60 seconds
+        }, 60000);
+    });
+}
+
 
 router.post('/validation', (req, res) => {
     const digitPressed = req.body.Digits;
