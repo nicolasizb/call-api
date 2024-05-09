@@ -33,7 +33,6 @@ router.post('/call', async (req, res) => {
             voice: 'Polly.Mia-Neural'
         }, `Hola ${firstName} ${lastName}, lo llamamos desde la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`);
 
-        twiml.pause({ length: 10 });
 
         const gather = twiml.gather({
             numDigits: 1,
@@ -44,6 +43,8 @@ router.post('/call', async (req, res) => {
             language: 'es',
             voice: 'Polly.Mia-Neural'
         }, 'Por favor marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.');
+
+        twiml.pause({ length: 7 });
 
         const twimlXml = twiml.toString();
 
@@ -98,8 +99,6 @@ router.post('/validation', (req, res) => {
         case '2':
             responseJSON = 2
             
-            twiml.pause({ length: 10 });
-
             const gather = twiml.gather({
                 language: 'es-MX',
                 numDigits: 1,
@@ -114,6 +113,7 @@ router.post('/validation', (req, res) => {
             
             Marque 1 si autoriza que le escribamos por WhatsApp para el cambio de dirección. O marque 2 para confirmar la entrega en la dirección ${addressGlobal}.`);
 
+            twiml.pause({ length: 7 });
 
             break;
         default:
