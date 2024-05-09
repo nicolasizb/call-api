@@ -109,10 +109,9 @@ router.post('/validation', (req, res) => {
             gather.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            },`Marque 1 si autoriza que le escribamos por WhatsApp para el cambio de dirección o marque 2 para confirmar la entrega en la dirección ${addressGlobal}.`);
+            },`Marque 1 si autoriza que le escribamos por WhatsApp para el cambio de dirección. O marque 2 para confirmar la entrega en la dirección ${addressGlobal}.`);
 
             twiml.pause({ length: 10 });
-            twiml.redirect('https://call-api-phi.vercel.app/change-address');
 
             break;
         default:
@@ -126,7 +125,7 @@ router.post('/validation', (req, res) => {
     res.type('text/xml').send(twiml.toString());
 });
 
-router.post('change-address', (req, res) => {
+router.post('/change-address', (req, res) => {
     const twiml = new VoiceResponse()
 
     const digitPressed = req.body.Digits
