@@ -94,11 +94,6 @@ router.post('/validation', (req, res) => {
         case '2':
             responseJSON = 2
 
-            twiml.say({
-                language: 'es',
-                voice: 'Polly.Mia-Neural'
-            }, 'Usted indicó que su dirección es incorrecta, nos pondremos en contacto con usted por WhatsApp para cambiar su dirección de envío.')
-
             const gather = twiml.gather({
                 language: 'es-MX',
                 numDigits: 1,
@@ -109,7 +104,9 @@ router.post('/validation', (req, res) => {
             gather.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            },`Marque 1 si autoriza que le escribamos por WhatsApp para el cambio de dirección. O marque 2 para confirmar la entrega en la dirección ${addressGlobal}.`);
+            },`Usted indicó que su dirección es incorrecta, nos pondremos en contacto con usted por WhatsApp para cambiar su dirección de envío. 
+            
+            Marque 1 si autoriza que le escribamos por WhatsApp para el cambio de dirección. O marque 2 para confirmar la entrega en la dirección ${addressGlobal}.`);
 
             twiml.pause({ length: 10 });
 
@@ -126,9 +123,9 @@ router.post('/validation', (req, res) => {
 });
 
 router.post('/change-address', (req, res) => {
-    const twiml = new VoiceResponse()
-
     const digitPressed = req.body.Digits
+    
+    const twiml = new VoiceResponse()
 
     switch(digitPressed) {
         case '1' :
@@ -142,6 +139,12 @@ router.post('/change-address', (req, res) => {
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
             }, `Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`)
+            break;
+        default:
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Opción no válida. Por favor, intenta de nuevo.');
             break;
     }
 
