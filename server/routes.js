@@ -51,27 +51,7 @@ router.post('/call', async (req, res) => {
             to: clientNumber,
             from: process.env.SUPPORT_NUMBER
         })
-
-        
-        function myPromise() {
-            return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    if(userDigit !== undefined) {
-                        resolve({ digitPressed: userDigit})
-                    } else {
-                        reject("Default")
-                    }
-                }, 100000)
-            })
-        }
-        myPromise()
-            .then((response) => {
-                res.status(200).json(response);
-            })  
-            .catch((err) => {
-                console.log(err)
-                res.status(500).json({ error: err.message });
-            })
+        res.status(200).json({ digitPressed: userDigit })
     } catch (error) {
         console.error(error);       
         res.status(400).json({ error: error.message });
