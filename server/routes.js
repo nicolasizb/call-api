@@ -44,32 +44,18 @@ router.post('/call', async (req, res) => {
 
         twiml.pause({ length: 7 });
 
+        const twimlXml = twiml.toString();
+
         await twilio.calls.create({
-            twiml: twiml.toString(),
+            twiml: twimlXml,
             to: clientNumber,
             from: process.env.SUPPORT_NUMBER
-        });
+        })
 
-        function myPromise() {
-            return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    if(userDigit !== undefined) {
-                        resolve({ digitPressed: userDigit})
-                    } else {
-                        reject("Default")
-                    }
-                }, 45000)
-            })
-        }
-        myPromise()
-            .then((response) => {
-                console.log("Response: ", response)
-                res.json(response)
-            })  
-            .catch((err) => {
-                console.log(err)
-                res.status(500).json({ error: err.message });
-            })
+        setTimeout(() => {
+            res.json({ digitPressed: userDigit})
+        }, 40000)
+
     } catch (error) {
         console.error(error);       
         res.status(400).json({ error: error.message });
@@ -120,7 +106,6 @@ router.post('/validation', async (req, res) => {
             }, 'Opción no válida. Por favor, intenta de nuevo.');
             break;
     }        
-    res.type('text/xml').send(twiml.toString());
 });
 
 router.post('/change-address', (req, res) => {
