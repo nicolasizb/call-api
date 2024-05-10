@@ -55,7 +55,6 @@ router.post('/call', async (req, res) => {
         setTimeout(() => {
             res.status(200).json({ digit: userDigit });
         }, 40000)
-
     } catch (error) {
         console.error(error);       
         res.status(400).json({ error: error.message });
