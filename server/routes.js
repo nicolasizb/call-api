@@ -53,7 +53,7 @@ router.post('/call', async (req, res) => {
         })
 
         console.log(userDigit)
-        res.status(200).json({ digitPressed: userDigit })
+        res.status(200).json({ digitPressed: "userDigit" })
 
     } catch (error) {
         console.error(error);       
