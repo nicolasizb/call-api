@@ -52,9 +52,14 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        console.log(userDigit)
-        res.status(200).json({ digitPressed: "userDigit" })
+        function getDigit() {
+            setTimeout(() => {
+                console.log({ digitPressed: userDigit })
+                return res.status(200).json({ digitPressed: userDigit })
+            }, 50000)
+        }
 
+        getDigit()
     } catch (error) {
         console.error(error);       
         res.status(400).json({ error: error.message });
