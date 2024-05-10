@@ -7,7 +7,7 @@ const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
 const twilio = require('twilio')(accountSid, authToken);
 
-let userDigit = undefined
+let userDigit = ''
 
 function changeData(newData) {
     userDigit = newData
@@ -51,7 +51,10 @@ router.post('/call', async (req, res) => {
             to: clientNumber,
             from: process.env.SUPPORT_NUMBER
         })
+
+        console.log(userDigit)
         res.status(200).json({ digitPressed: userDigit })
+
     } catch (error) {
         console.error(error);       
         res.status(400).json({ error: error.message });
