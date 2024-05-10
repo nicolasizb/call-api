@@ -58,7 +58,7 @@ router.post('/call', async (req, res) => {
                     } else {
                         reject("Default")
                     }
-                }, 30000)
+                }, 40000)
             })
         }
         myPromise()
