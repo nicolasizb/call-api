@@ -61,7 +61,7 @@ router.post('/call', async (req, res) => {
                     } else {
                         reject("Default")
                     }
-                }, 45000)
+                }, 100000)
             })
         }
         myPromise()
@@ -122,6 +122,7 @@ router.post('/validation', async (req, res) => {
             }, 'Opción no válida. Por favor, intenta de nuevo.');
             break;
     }        
+    res.type('text/xml').send(twiml.toString());
 });
 
 router.post('/change-address', (req, res) => {
