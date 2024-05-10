@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
 })
 
 router.post('/test-one', async (req, res) => {
-    const password = req.body.password
+    const { password } = req.body
 
     try {
         if(req.body.digitPressed) {
