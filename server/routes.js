@@ -26,7 +26,7 @@ router.post('/test-one', async (req, res) => {
             const digitPressed = req.body.digitPressed;
             console.log("Dígito marcado recibido en /call:", digitPressed);
         } else {
-            if (password = '22') {
+            if (password === '22') {
                 console.log("Logic code")
                 res.redirect('/test-two')
             }
