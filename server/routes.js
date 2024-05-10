@@ -52,9 +52,26 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        setTimeout(() => {
-            res.status(200).json({ digit: userDigit });
-        }, 40000)
+        
+        function myPromise() {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    if(userDigit !== undefined) {
+                        resolve({ digitPressed: userDigit})
+                    } else {
+                        reject("Default")
+                    }
+                }, 45000)
+            })
+        }
+        myPromise()
+            .then((response) => {
+                res.status(200).json(response);
+            })  
+            .catch((err) => {
+                console.log(err)
+                res.status(500).json({ error: err.message });
+            })
     } catch (error) {
         console.error(error);       
         res.status(400).json({ error: error.message });
