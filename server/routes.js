@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 const router = express.Router();
 const VoiceResponse = require('twilio').twiml.VoiceResponse;
 
@@ -17,70 +18,90 @@ router.get('/', (req, res) => {
     res.status(200).json({ res: "Todo bien" });
 })
 
+router.get('/test-one', async (req, res) => {
+    try {
+        if(req.body.digitPressed) {
+            const digitPressed = req.body.digitPressed;
+            console.log("Dígito marcado recibido en /call:", digitPressed);
+        } else {
+            console.log("Logic code")
+            res.redirect('/test-two')
+        }
+    } catch(error) {
+        console.error(error);       
+        res.status(400).json({ error: error.message });
+    }
+})
+
+router.get('/test-two', async (req, res) => {
+    const digitPressed = { Digits: '1' }
+
+    await axios.post('https://call-api-phi.vercel.app/test-one', { digitPressed });
+    console.log("Dígito enviado a /call:", digitPressed);
+})
+
+
+
 router.post('/call', async (req, res) => {    
     try {
-        const { clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
-        if (!clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
-            throw new Error("Datos inválidos");
+        if (req.body.digitPressed) {
+            const digitPressed = req.body.digitPressed;
+            console.log("Dígito marcado recibido en /call:", digitPressed);
+
+        } else {
+            // Si no hay un dígito marcado, significa que es una nueva llamada y no proviene de /validation
+            const { clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
+            if (!clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
+                throw new Error("Datos inválidos")
+            }
+            const newAddress = `${addressOne} ${addressDetails}`;
+
+            changeAddress(newAddress);
+
+            const twiml = new VoiceResponse();
+            twiml.say({ 
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, `Hola ${firstName} ${lastName}, lo llamamos desde la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`);
+
+            const gather = twiml.gather({
+                numDigits: 1,
+                action: 'https://call-api-phi.vercel.app/validation',
+                method: 'POST'
+            });
+              
+            gather.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Por favor marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.');
+
+            twiml.pause({ length: 7 });
+
+            const twimlXml = twiml.toString();
+
+            await twilio.calls.create({
+                twiml: twimlXml,
+                to: clientNumber,
+                from: process.env.SUPPORT_NUMBER
+            });
+
         }
-        const newAddress = `${addressOne} ${addressDetails}`;
-
-        changeAddress(newAddress);
-
-        const twiml = new VoiceResponse();
-        twiml.say({ 
-            language: 'es',
-            voice: 'Polly.Mia-Neural'
-        }, `Hola ${firstName} ${lastName}, lo llamamos desde la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`);
-
-        const gather = twiml.gather({
-            numDigits: 1,
-            action: 'https://call-api-phi.vercel.app/validation',
-            method: 'POST'
-        });
-        gather.say({
-            language: 'es',
-            voice: 'Polly.Mia-Neural'
-        }, 'Por favor marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.');
-
-        twiml.pause({ length: 7 });
-
-        const twimlXml = twiml.toString();
-
-        await twilio.calls.create({
-            twiml: twimlXml,
-            to: clientNumber,
-            from: process.env.SUPPORT_NUMBER
-        });
-
-        const responseJSON = await myPromise();
-
-        console.log("Success: ", responseJSON);
-        res.status(200).json({ responseJSON });
     } catch (error) {
         console.error(error);       
         res.status(400).json({ error: error.message });
     }
 });
 
-function myPromise() {
-    return new Promise((resolve, reject) => {
-        const interval = setInterval(() => {
-            if (responseJSON === 1 || responseJSON === 2) {
-                clearInterval(interval);
-                resolve(responseJSON);
-            }
-        }, 1000);
-        setTimeout(() => {
-            clearInterval(interval);
-            reject("La tarea ha fallado."); // Reject if no response after 60 seconds
-        }, 60000);
-    });
-}
 
-
-router.post('/validation', (req, res) => {
+router.post('/validation', async (req, res) => {
     const digitPressed = req.body.Digits;
+
+    try {
+        await axios.post('https://call-api-phi.vercel.app/call', { digitPressed: digitPressed });
+        console.log("Dígito enviado a /call:", digitPressed);
+    } catch (error) {
+        console.error(error);
+    }
 
     const twiml = new VoiceResponse();
     switch (digitPressed) { 
