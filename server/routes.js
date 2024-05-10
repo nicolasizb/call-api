@@ -18,7 +18,7 @@ router.get('/', (req, res) => {
     res.status(200).json({ res: "Todo bien" });
 })
 
-router.get('/test-one', async (req, res) => {
+router.post('/test-one', async (req, res) => {
     try {
         if(req.body.digitPressed) {
             const digitPressed = req.body.digitPressed;
@@ -33,7 +33,7 @@ router.get('/test-one', async (req, res) => {
     }
 })
 
-router.get('/test-two', async (req, res) => {
+router.post('/test-two', async (req, res) => {
     const digitPressed = { Digits: '1' }
 
     await axios.post('https://call-api-phi.vercel.app/test-one', { digitPressed });
