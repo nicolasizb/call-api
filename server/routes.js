@@ -7,10 +7,22 @@ const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
 const twilio = require('twilio')(accountSid, authToken);
 
-let userDigit = ''
+let userData = {
+    number: '',
+    address: '',
+    digit: ''
+};
 
-function changeData(newData) {
-    userDigit = newData
+function changeData(number, address, digit) {
+    if (typeof number !== 'undefined') {
+        userData.number = number;
+    }
+    if (typeof address !== 'undefined') {
+        userData.address = address;
+    }
+    if (typeof digit !== 'undefined') {
+        userData.digit = digit;
+    }
 }
 
 router.get('/', (req, res) => {
@@ -25,6 +37,8 @@ router.post('/call', async (req, res) => {
         }
         const newAddress = `${addressOne} ${addressDetails}`;
         const twiml = new VoiceResponse();
+
+        changeData(clientNumber, addressOne + ' - ' + addressDetails, undefined)
 
         twiml.say({ 
             language: 'es',
@@ -62,16 +76,18 @@ router.post('/call', async (req, res) => {
 router.post('/validation', async (req, res) => {
     try {
         const digitPressed = req.body.Digits;
-        changeData(digitPressed)
+        changeData(undefined, undefined, digitPressed)
+
         const twiml = new VoiceResponse();
 
-        axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', { digitPressed: digitPressed })
-        .then(response => {
-            console.log('Respuesta enviada a Zapier:', response.data);
-        })
-        .catch(error => {
-            console.error('Error al enviar respuesta a Zapier:', error);
-        });
+        axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/')
+            .then(response => {
+                res.status(200).json({userData})
+            })
+            .catch(error => {
+                console.error('Error al enviar respuesta a Zapier:', error);
+                res.status(500).send('Error interno del servidor');
+            });
 
         switch (digitPressed) { 
             case '1':
@@ -119,6 +135,8 @@ router.post('/validation', async (req, res) => {
 
 router.post('/change-address', (req, res) => {
     const digitPressed = req.body.Digits
+
+    changeData(undefined, undefined, digitPressed)
     
     const twiml = new VoiceResponse()
 
