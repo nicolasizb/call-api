@@ -8,16 +8,16 @@ const authToken = process.env.AUTH_TOKEN;
 const twilio = require('twilio')(accountSid, authToken);
 
 let userData = {
-    recordID: '',
+    userID: '',
     number: '',
     address: '',
     digit: '',
     callSID: '',
 };
 
-function changeData(recordID, number, address, digit, callSID) {
-    if (typeof recordID !== 'undefined') {
-        userData.recordID = recordID;
+function changeData(userID, number, address, digit, callSID) {
+    if (typeof userID !== 'undefined') {
+        userData.userID = userID;
     }
     if (typeof number !== 'undefined') {
         userData.number = number;
@@ -39,8 +39,8 @@ router.get('/', (req, res) => {
 
 router.post('/call', async (req, res) => {    
     try {
-        const { recordID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
-        if (!recordID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
+        const { userID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
+        if (!userID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
             throw new Error("Datos inválidos")
         }
         const newAddress = `${addressOne} ${addressDetails}`;
@@ -72,9 +72,9 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
         
-        changeData(recordID, clientNumber, addressOne + ' - ' + addressDetails, undefined, call.sid)
+        changeData(userID, clientNumber, addressOne + ' - ' + addressDetails, undefined, call.sid)
 
-        res.status(200).json({ recordID: recordID, SID: call.sid });
+        res.status(200).json({ userID: userID, SID: call.sid });
     } catch (error) {
         console.error(error);       
         res.status(400).json({ error: error.message });
@@ -140,7 +140,7 @@ router.post('/validation', async (req, res) => {
 router.post('/change-address', (req, res) => {
     const digitPressed = req.body.Digits
 
-    changeData(undefined, undefined, digitPressed)
+    changeData(undefined, undefined, undefined, digitPressed, undefined)        
     
     const twiml = new VoiceResponse()
 
