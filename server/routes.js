@@ -11,10 +11,11 @@ let userData = {
     recordID: '',
     number: '',
     address: '',
-    digit: ''
+    digit: '',
+    callSID: '',
 };
 
-function changeData(recordID, number, address, digit) {
+function changeData(recordID, number, address, digit, callSID) {
     if (typeof recordID !== 'undefined') {
         userData.recordID = recordID;
     }
@@ -26,6 +27,9 @@ function changeData(recordID, number, address, digit) {
     }
     if (typeof digit !== 'undefined') {
         userData.digit = digit;
+    }
+    if (typeof callSID !== 'undefined') {
+        userData.callSID = callSID;
     }
 }
 
@@ -41,8 +45,6 @@ router.post('/call', async (req, res) => {
         }
         const newAddress = `${addressOne} ${addressDetails}`;
         const twiml = new VoiceResponse();
-
-        changeData(recordID, clientNumber, addressOne + ' - ' + addressDetails, undefined)
 
         twiml.say({ 
             language: 'es',
@@ -69,6 +71,8 @@ router.post('/call', async (req, res) => {
             to: clientNumber,
             from: process.env.SUPPORT_NUMBER
         })
+        
+        changeData(recordID, clientNumber, addressOne + ' - ' + addressDetails, undefined, call.sid)
 
         res.status(200).json({ recordID: recordID, SID: call.sid });
     } catch (error) {
@@ -81,7 +85,7 @@ router.post('/validation', async (req, res) => {
     try {
         const digitPressed = req.body.Digits
 
-        changeData(undefined, undefined, undefined, digitPressed)
+        changeData(undefined, undefined, undefined, digitPressed, undefined)
 
         const twiml = new VoiceResponse();
 
