@@ -80,17 +80,10 @@ router.post('/validation', async (req, res) => {
 
         const twiml = new VoiceResponse();
 
-        axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/')
-            .then(response => {
-                res.status(200).json({userData})
-            })
-            .catch(error => {
-                console.error('Error al enviar respuesta a Zapier:', error);
-                res.status(500).send('Error interno del servidor');
-            });
-
         switch (digitPressed) { 
             case '1':
+
+                await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData);
 
                 twiml.say({
                     language: 'es',
@@ -99,6 +92,8 @@ router.post('/validation', async (req, res) => {
 
                 break;
             case '2':
+                await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData);                
+
                 const gather = twiml.gather({
                     language: 'es-MX',
                     numDigits: 1,
