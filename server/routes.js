@@ -52,10 +52,7 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        setTimeout(() => {
-            console.log({ digitPressed: userDigit })
-            return res.status(200).json({ digitPressed: userDigit })
-        }, 50000)
+        res.status(200).json({ message: "Llamada iniciada, espere la respuesta." });
     } catch (error) {
         console.error(error);       
         res.status(400).json({ error: error.message });
