@@ -31,8 +31,8 @@ router.get('/', (req, res) => {
 
 router.post('/call', async (req, res) => {    
     try {
-        const { clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
-        if (!clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
+        const { recordID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
+        if (!recordID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
             throw new Error("Datos inválidos")
         }
         const newAddress = `${addressOne} ${addressDetails}`;
@@ -66,7 +66,7 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        res.status(200).json({ SID: call.sid });
+        res.status(200).json({ recordID: recordID, SID: call.sid });
     } catch (error) {
         console.error(error);       
         res.status(400).json({ error: error.message });
