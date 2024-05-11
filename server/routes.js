@@ -43,7 +43,6 @@ router.post('/call', async (req, res) => {
         if (!userID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
             throw new Error("Datos inválidos")
         }
-        const newAddress = `${addressOne} ${addressDetails}`;
         const twiml = new VoiceResponse();
 
         twiml.say({ 
@@ -85,12 +84,11 @@ router.post('/validation', async (req, res) => {
     try {
         const digitPressed = req.body.Digits
 
-        changeData(undefined, undefined, undefined, digitPressed, undefined)
-
         const twiml = new VoiceResponse();
 
         switch (digitPressed) { 
             case '1':
+                changeData(undefined, undefined, undefined, 'Confirm', undefined)
 
                 await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData);
 
@@ -98,9 +96,10 @@ router.post('/validation', async (req, res) => {
                     language: 'es',
                     voice: 'Polly.Mia-Neural'
                 }, 'Usted confirmó que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.');
-
                 break;
             case '2':
+                changeData(undefined, undefined, undefined, 'Change', undefined)
+
                 await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData);                
 
                 const gather = twiml.gather({
@@ -115,10 +114,9 @@ router.post('/validation', async (req, res) => {
                     voice: 'Polly.Mia-Neural'
                 },`Usted indicó que su dirección es incorrecta, por favor:
 
-                Marque 1 si autoriza que le escribamos por WhatsApp para el cambio de dirección. O marque 2 para confirmar la entrega en la dirección ${addressGlobal}.`);
+                Marque 1 si autoriza que le escribamos por WhatsApp para el cambio de dirección. O marque 2 para confirmar la entrega en la dirección ${ userData.address }.`);
 
                 twiml.pause({ length: 7 });
-
                 break;
             default:
                 console.log("There isn't data")
@@ -137,21 +135,27 @@ router.post('/validation', async (req, res) => {
     }    
 });
 
-router.post('/change-address', (req, res) => {
+router.post('/change-address', async (req, res) => {
     const digitPressed = req.body.Digits
-
-    changeData(undefined, undefined, undefined, digitPressed, undefined)        
     
     const twiml = new VoiceResponse()
 
     switch(digitPressed) {
         case '1' :
+            changeData(undefined, undefined, undefined, 'Change', undefined)        
+
+            await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData)
+
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
             }, 'Nos pondremos en contacto con usted lo más pronto posible.');
             break;
         case '2':
+            changeData(undefined, undefined, undefined, 'Confirm', undefined)   
+
+            await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData)
+
             twiml.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
