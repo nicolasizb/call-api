@@ -60,13 +60,13 @@ router.post('/call', async (req, res) => {
 
         const twimlXml = twiml.toString();
 
-        await twilio.calls.create({
+        const call = await twilio.calls.create({
             twiml: twimlXml,
             to: clientNumber,
             from: process.env.SUPPORT_NUMBER
         })
 
-        res.status(200).json({ message: "Llamada iniciada, espere la respuesta." });
+        res.status(200).json({ SID: call.sid });
     } catch (error) {
         console.error(error);       
         res.status(400).json({ error: error.message });
