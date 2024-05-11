@@ -8,12 +8,16 @@ const authToken = process.env.AUTH_TOKEN;
 const twilio = require('twilio')(accountSid, authToken);
 
 let userData = {
+    recordID: '',
     number: '',
     address: '',
     digit: ''
 };
 
-function changeData(number, address, digit) {
+function changeData(recordID, number, address, digit) {
+    if (typeof recordID !== 'undefined') {
+        userData.recordID = recordID;
+    }
     if (typeof number !== 'undefined') {
         userData.number = number;
     }
@@ -38,7 +42,7 @@ router.post('/call', async (req, res) => {
         const newAddress = `${addressOne} ${addressDetails}`;
         const twiml = new VoiceResponse();
 
-        changeData(clientNumber, addressOne + ' - ' + addressDetails, undefined)
+        changeData(recordID, clientNumber, addressOne + ' - ' + addressDetails, undefined)
 
         twiml.say({ 
             language: 'es',
@@ -75,8 +79,10 @@ router.post('/call', async (req, res) => {
 
 router.post('/validation', async (req, res) => {
     try {
-        const digitPressed = req.body.Digits;
-        changeData(undefined, undefined, digitPressed)
+        const digitPressed = '2';
+        changeData(undefined, undefined, undefined, digitPressed)
+
+        res.status(200).json(userData)
 
         const twiml = new VoiceResponse();
 
