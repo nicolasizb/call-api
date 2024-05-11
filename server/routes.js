@@ -79,7 +79,8 @@ router.post('/call', async (req, res) => {
 
 router.post('/validation', async (req, res) => {
     try {
-        const digitPressed = '2';
+        const digitPressed = req.body.Digits
+
         changeData(undefined, undefined, undefined, digitPressed)
 
         res.status(200).json(userData)
