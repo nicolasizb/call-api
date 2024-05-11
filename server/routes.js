@@ -83,8 +83,6 @@ router.post('/validation', async (req, res) => {
 
         changeData(undefined, undefined, undefined, digitPressed)
 
-        res.status(200).json(userData)
-
         const twiml = new VoiceResponse();
 
         switch (digitPressed) { 
