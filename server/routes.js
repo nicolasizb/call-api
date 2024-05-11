@@ -52,14 +52,10 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        function getDigit() {
-            setTimeout(() => {
-                console.log({ digitPressed: userDigit })
-                return res.status(200).json({ digitPressed: userDigit })
-            }, 50000)
-        }
-
-        getDigit()
+        setTimeout(() => {
+            console.log({ digitPressed: userDigit })
+            return res.status(200).json({ digitPressed: userDigit })
+        }, 50000)
     } catch (error) {
         console.error(error);       
         res.status(400).json({ error: error.message });
@@ -67,50 +63,61 @@ router.post('/call', async (req, res) => {
 });
 
 router.post('/validation', async (req, res) => {
-    const digitPressed = req.body.Digits;
-    const twiml = new VoiceResponse();
+    try {
+        const digitPressed = req.body.Digits;
+        changeData(digitPressed)
+        const twiml = new VoiceResponse();
 
-    switch (digitPressed) { 
-        case '1':
-            changeData(digitPressed)
+        axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', { digitPressed: digitPressed })
+        .then(response => {
+            console.log('Respuesta enviada a Zapier:', response.data);
+        })
+        .catch(error => {
+            console.error('Error al enviar respuesta a Zapier:', error);
+        });
 
-            twiml.say({
-                language: 'es',
-                voice: 'Polly.Mia-Neural'
-            }, 'Usted confirmó que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.');
+        switch (digitPressed) { 
+            case '1':
 
-            break;
-        case '2':
-            changeData(digitPressed)
-            
-            const gather = twiml.gather({
-                language: 'es-MX',
-                numDigits: 1,
-                action: 'https://call-api-phi.vercel.app/change-address',
-                method: 'POST'
-            });
+                twiml.say({
+                    language: 'es',
+                    voice: 'Polly.Mia-Neural'
+                }, 'Usted confirmó que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.');
 
-            gather.say({
-                language: 'es',
-                voice: 'Polly.Mia-Neural'
-            },`Usted indicó que su dirección es incorrecta, por favor:
-            
-            Marque 1 si autoriza que le escribamos por WhatsApp para el cambio de dirección. O marque 2 para confirmar la entrega en la dirección ${addressGlobal}.`);
+                break;
+            case '2':
+                const gather = twiml.gather({
+                    language: 'es-MX',
+                    numDigits: 1,
+                    action: 'https://call-api-phi.vercel.app/change-address',
+                    method: 'POST'
+                });
 
-            twiml.pause({ length: 7 });
+                gather.say({
+                    language: 'es',
+                    voice: 'Polly.Mia-Neural'
+                },`Usted indicó que su dirección es incorrecta, por favor:
 
-            break;
-        default:
-            console.log("There isn't data")
-            res.status(200).json({ msj: "It isn't correct digit" })
+                Marque 1 si autoriza que le escribamos por WhatsApp para el cambio de dirección. O marque 2 para confirmar la entrega en la dirección ${addressGlobal}.`);
 
-            twiml.say({
-                language: 'es',
-                voice: 'Polly.Mia-Neural'
-            }, 'Opción no válida. Por favor, intenta de nuevo.');
-            break;
-    }        
-    res.type('text/xml').send(twiml.toString());
+                twiml.pause({ length: 7 });
+
+                break;
+            default:
+                console.log("There isn't data")
+                res.status(200).json({ msj: "It isn't correct digit" })
+
+                twiml.say({
+                    language: 'es',
+                    voice: 'Polly.Mia-Neural'
+                }, 'Opción no válida. Por favor, intenta de nuevo.');
+                break;
+        }        
+        res.type('text/xml').send(twiml.toString());
+    } catch (error) {
+        console.error(error);       
+        res.status(400).json({ error: error.message });
+    }    
 });
 
 router.post('/change-address', (req, res) => {
