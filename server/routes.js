@@ -44,7 +44,7 @@ router.get('/', (req, res) => {
 router.post('/call', async (req, res) => {    
     try {
         const { userID, recordID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
-        if (!userID || recordID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
+        if (!userID || !recordID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
             throw new Error("Datos inválidos")
         }
         const twiml = new VoiceResponse();
@@ -77,7 +77,7 @@ router.post('/call', async (req, res) => {
         
         changeData(userID, recordID, clientNumber, addressOne + ' - ' + addressDetails, undefined, call.sid)
 
-        res.status(200).json({ userID: userID, SID: call.sid });
+        res.status(200).json({ userID: userID, SID: call.sid, recordID: recordID });
     } catch (error) {
         console.error(error);       
         res.status(400).json({ error: error.message });
