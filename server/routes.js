@@ -9,6 +9,7 @@ const twilio = require('twilio')(accountSid, authToken);
 
 let userData = {
     userID: '',
+    recordID: '',
     number: '',
     address: '',
     digit: '',
@@ -18,6 +19,9 @@ let userData = {
 function changeData(userID, number, address, digit, callSID) {
     if (typeof userID !== 'undefined') {
         userData.userID = userID;
+    }
+    if (typeof recordID !== 'undefined') {
+        userData.recordID = recordID;
     }
     if (typeof number !== 'undefined') {
         userData.number = number;
@@ -39,8 +43,8 @@ router.get('/', (req, res) => {
 
 router.post('/call', async (req, res) => {    
     try {
-        const { userID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
-        if (!userID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
+        const { userID, recordID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
+        if (!userID || recordID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
             throw new Error("Datos inválidos")
         }
         const twiml = new VoiceResponse();
@@ -71,7 +75,7 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
         
-        changeData(userID, clientNumber, addressOne + ' - ' + addressDetails, undefined, call.sid)
+        changeData(userID, recordID, clientNumber, addressOne + ' - ' + addressDetails, undefined, call.sid)
 
         res.status(200).json({ userID: userID, SID: call.sid });
     } catch (error) {
@@ -88,7 +92,7 @@ router.post('/validation', async (req, res) => {
 
         switch (digitPressed) { 
             case '1':
-                changeData(undefined, undefined, undefined, 'Confirm', undefined)
+                changeData(undefined, undefined, undefined, undefined, 'Confirm', undefined)
 
                 await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData);
 
@@ -98,7 +102,7 @@ router.post('/validation', async (req, res) => {
                 }, 'Usted confirmó que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.');
                 break;
             case '2':
-                changeData(undefined, undefined, undefined, 'Change', undefined)
+                changeData(undefined, undefined, undefined, undefined, 'Change', undefined)
 
                 await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData);                
 
@@ -142,7 +146,7 @@ router.post('/change-address', async (req, res) => {
 
     switch(digitPressed) {
         case '1' :
-            changeData(undefined, undefined, undefined, 'Change', undefined)        
+            changeData(undefined, undefined, undefined, undefined, 'Change', undefined)        
 
             await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData)
 
@@ -152,7 +156,7 @@ router.post('/change-address', async (req, res) => {
             }, 'Nos pondremos en contacto con usted lo más pronto posible.');
             break;
         case '2':
-            changeData(undefined, undefined, undefined, 'Confirm', undefined)   
+            changeData(undefined, undefined, undefined, undefined, 'Confirm', undefined)   
 
             await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData)
 
