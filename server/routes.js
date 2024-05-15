@@ -37,10 +37,6 @@ function changeData(userID, recordID, number, address, digit, callSID) {
     }
 }
 
-router.get('/', (req, res) => {
-    res.status(200).json({ res: "Todo bien" });
-})
-
 router.post('/call', async (req, res) => {    
     try {
         const { userID, recordID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
