@@ -14,7 +14,6 @@ function serverInit() {
   app.use(router);
 
   app.listen(port, "0.0.0.0", function () {
-    // ...
   });
 }
 
