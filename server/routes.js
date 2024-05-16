@@ -58,10 +58,9 @@ router.post('/call', async (req, res) => {
           
         gather.say({
             language: 'es',
-            voice: 'Polly.Mia-Neural'
+            voice: 'Polly.Mia-Neural',
+            pause: 15,
         }, 'Por favor marque el número 1, para confirmar que está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.');
-
-        twiml.pause({ length: 7 });
 
         const twimlXml = twiml.toString();
 
