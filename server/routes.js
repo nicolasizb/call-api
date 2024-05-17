@@ -125,7 +125,7 @@ router.post('/validation', async (req, res) => {
                 await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData);                
 
                 const gather = twiml.gather({
-                    input: 'speech',
+                    input: 'speech dtmf',
                     language: 'es-MX',
                     action: 'https://call-api-phi.vercel.app/change-address',
                     method: 'POST',
@@ -136,10 +136,11 @@ router.post('/validation', async (req, res) => {
                         'Número (si aplica)',
                         'Número de casa o apartamento'
                     ],
-                    sensibility: 0.7,
+                    // sensibility: 0.7,
                     speechModel: 'phone_call',
-                    speechTimeout: 'auto', 
-                    enhanced: true
+                    timeout: 10
+                    // speechTimeout: 'auto', 
+                    // enhanced: true
                 })
 
                 gather.say({
@@ -167,14 +168,14 @@ router.post('/validation', async (req, res) => {
 });
 
 router.post('/change-address', async (req, res) => {
-    const speechResult = req.body.SpeechResult
+    const clientAddress = req.body.SpeechResult
     
     const twiml = new VoiceResponse()
 
     twiml.say({
         language: 'es-MX',
         voice: 'Polly.Mia-Neural',
-    }, `Su dirección es ${speechResult}?`)
+    }, `Su dirección es ${ clientAddress }?`)
 
 
     // switch(speechResult) {
