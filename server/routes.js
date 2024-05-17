@@ -147,7 +147,7 @@ router.post('/validation', async (req, res) => {
                         'Calle 127 Bis # 16-30 Interior 3',
                         'Calle 127 Bis 16 30 3',
                     ],
-                    speechModel: 'phone_call',
+                    speechModel: 'numbers_and_commands',
                     speechTimeout: 'auto', 
                     enhanced: true,
                     timeout: 10
@@ -263,7 +263,7 @@ router.post('/change-address-two', async (req,res) => {
                     'Calle 127 Bis # 16-30 Interior 3',
                     'Calle 127 Bis 16 30 3',
                 ],
-                speechModel: 'phone_call',
+                speechModel: 'numbers_and_commands',
                 speechTimeout: 'auto', 
                 enhanced: true,
                 timeout: 10
@@ -343,7 +343,7 @@ router.post('/change-address-four', async (req,res) => {
                     'Calle 127 Bis # 16-30 Interior 3',
                     'Calle 127 Bis 16 30 3',
                 ],
-                speechModel: 'phone_call',
+                speechModel: 'numbers_and_commands',
                 speechTimeout: 'auto', 
                 enhanced: true,
                 timeout: 10
@@ -352,7 +352,7 @@ router.post('/change-address-four', async (req,res) => {
             gather.say({
                 language: 'es',
                 voice: 'Polly.Mia-Neural'
-            },`Rpita su dirección en 2 segundos`)
+            },`Repita su dirección en 2 segundos`)
             break;
         default:
             twiml.say({
