@@ -55,7 +55,7 @@ router.post('/call', async (req, res) => {
             numDigits: 1,
             action: 'https://call-api-phi.vercel.app/validation',
             method: 'POST',
-            timeout: 5
+            timeout: 7
         });
         
         gather.say({
@@ -68,17 +68,19 @@ router.post('/call', async (req, res) => {
             voice: 'Polly.Mia-Neural'
         }, `Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`);
 
-        const repeatGather = twiml.gather({
-            numDigits: 1,
-            action: 'https://call-api-phi.vercel.app/validation',
-            method: 'POST',
-            timeout: 10
-        });
-    
-        repeatGather.say({
-            language: 'es-MX',
-            voice: 'Polly.Mia-Neural'
-        }, 'Marque el número 1, si está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.')
+        for (let i = 0; i<= 2; i++) {
+            const repeatGather = twiml.gather({
+                numDigits: 1,
+                action: 'https://call-api-phi.vercel.app/validation',
+                method: 'POST',
+                timeout: 10
+            });
+        
+            repeatGather.say({
+                language: 'es-MX',
+                voice: 'Polly.Mia-Neural'
+            }, 'Marque el número 1, si está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.')
+        }
         
         const call = await twilio.calls.create({
             twiml: twiml.toString(),
@@ -92,36 +94,6 @@ router.post('/call', async (req, res) => {
     } catch (error) {
         console.error(error)
         res.status(400).json({ error: error.message })
-    }
-});
-
-router.post('/repeat', async (req, res) => {
-    try {
-        const twiml = new VoiceResponse()
-    
-        twiml.say({
-            language: 'es-MX',
-            voice: 'Polly.Mia-Neural'
-        }, `Su dirección es ${userData.address}?`)
-    
-        const gather = twiml.gather({
-            numDigits: 1,
-            action: 'https://call-api-phi.vercel.app/validation',
-            method: 'POST',
-            timeout: 10
-        })
-    
-        gather.say({
-            language: 'es-MX',
-            voice: 'Polly.Mia-Neural'
-        }, 'Marque el número 1, si está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.')
-    
-        twiml.redirect('https://call-api-phi.vercel.app/repeat')
-
-        res.type('text/xml').send(twiml.toString())
-    } catch (error) {
-        console.error(error);       
-        res.status(400).json({ error: error.message });
     }
 })
 
