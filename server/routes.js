@@ -136,7 +136,7 @@ router.post('/validation', async (req, res) => {
                         'Número (si aplica)',
                         'Número de casa o apartamento'
                     ],
-                    sensibility: 0.7,
+                    sensibility: 0.4,
                     speechModel: 'phone_call',
                     speechTimeout: 'auto', 
                     enhanced: true,
@@ -242,7 +242,7 @@ router.post('/change-address-two', async (req,res) => {
                     'Número (si aplica)',
                     'Número de casa o apartamento'
                 ],
-                sensibility: 0.7,
+                sensibility: 0.3,
                 speechModel: 'phone_call',
                 speechTimeout: 'auto', 
                 enhanced: true,
@@ -276,7 +276,7 @@ router.post('/change-address-three', (req, res) => {
 
     const gather =  twiml.gather({
         numDigits: '1',
-        action: 'https://call-api-phi.vercel.app/change-address-two',
+        action: 'https://call-api-phi.vercel.app/change-address-four',
         method: 'POST',
     })
 
@@ -284,6 +284,65 @@ router.post('/change-address-three', (req, res) => {
         language: 'es',
         voice: 'Polly.Mia-Neural',
     }, 'Marque 1 si está correcta la dirección, Marque 2 para decirla de nuevo')
+
+    res.type('text/xml').send(twiml.toString());
+})
+
+router.post('/change-address-four', async (req,res) => {
+    const digitPressed = req.body.Digits
+    const twiml = new VoiceResponse()
+
+    switch(digitPressed) {
+        case '1' :
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Nos pondremos en contacto con usted lo más pronto posible.');
+            break;
+        case '2':
+            const gather = twiml.gather({
+                input: 'speech dtmf',
+                language: 'es',
+                action: 'https://call-api-phi.vercel.app/change-address-five',
+                method: 'POST',
+                hints: [
+                    'Tipo de vía (Calle, Carrera, Avenida, Diagonal)',
+                    'Número de la vía',
+                    'Letra (si aplica)',
+                    'Número (si aplica)',
+                    'Número de casa o apartamento'
+                ],
+                sensibility: 0.2,
+                speechModel: 'phone_call',
+                speechTimeout: 'auto', 
+                enhanced: true,
+                timeout: 10
+            })
+
+            gather.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            },`Rpita su dirección en 2 segundos`)
+            break;
+        default:
+            twiml.say({
+                language: 'es',
+                voice: 'Polly.Mia-Neural'
+            }, 'Opción no válida. Por favor, intenta de nuevo.');
+            break;
+    }
+    res.type('text/xml').send(twiml.toString());
+})
+
+router.post('/change-address-five', (req, res) => {
+    const clientAddress = req.body.SpeechResult
+    
+    const twiml = new VoiceResponse()
+
+    twiml.say({
+        language: 'es',
+        voice: 'Polly.Mia-Neural',
+    }, `Su dirección es ${ clientAddress }?`)
 
     res.type('text/xml').send(twiml.toString());
 })
