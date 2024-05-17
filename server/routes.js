@@ -174,7 +174,6 @@ router.post('/change-address', async (req, res) => {
     twiml.say({
         language: 'es-MX',
         voice: 'Polly.Mia-Neural',
-        timeout: 14
     }, `Su dirección es ${speechResult}?`)
 
 
