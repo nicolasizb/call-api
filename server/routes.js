@@ -136,7 +136,6 @@ router.post('/validation', async (req, res) => {
                         'Número (si aplica)',
                         'Número de casa o apartamento'
                     ],
-                    sensibility: 0.4,
                     speechModel: 'phone_call',
                     speechTimeout: 'auto', 
                     enhanced: true,
@@ -242,7 +241,6 @@ router.post('/change-address-two', async (req,res) => {
                     'Número (si aplica)',
                     'Número de casa o apartamento'
                 ],
-                sensibility: 0.3,
                 speechModel: 'phone_call',
                 speechTimeout: 'auto', 
                 enhanced: true,
@@ -312,7 +310,6 @@ router.post('/change-address-four', async (req,res) => {
                     'Número (si aplica)',
                     'Número de casa o apartamento'
                 ],
-                sensibility: 0.2,
                 speechModel: 'phone_call',
                 speechTimeout: 'auto', 
                 enhanced: true,
