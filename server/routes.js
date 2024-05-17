@@ -55,7 +55,7 @@ router.post('/call', async (req, res) => {
             numDigits: 1,
             action: 'https://call-api-phi.vercel.app/validation',
             method: 'POST',
-            timeout: 7
+            timeout: 3
         });
         
         gather.say({
@@ -73,7 +73,7 @@ router.post('/call', async (req, res) => {
                 numDigits: 1,
                 action: 'https://call-api-phi.vercel.app/validation',
                 method: 'POST',
-                timeout: 10
+                timeout: 3
             });
         
             repeatGather.say({
@@ -81,6 +81,11 @@ router.post('/call', async (req, res) => {
                 voice: 'Polly.Mia-Neural'
             }, 'Marque el número 1, si está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.')
         }
+
+        twiml.say({
+            language: 'es-MX',
+            voice: 'Polly.Mia-Neural'
+        }, 'Nos pondremos en contacto con usted')
         
         const call = await twilio.calls.create({
             twiml: twiml.toString(),
