@@ -206,6 +206,6 @@ router.post('/change-address', async (req, res) => {
     //         }, 'Opción no válida. Por favor, intenta de nuevo.');
     //         break;
     // }
-    // res.type('text/xml').send(twiml.toString());
+    res.type('text/xml').send(twiml.toString());
 })
 module.exports = router;
