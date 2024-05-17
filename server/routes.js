@@ -110,9 +110,9 @@ router.post('/validation', async (req, res) => {
 
         switch (digitPressed) { 
             case '1':
-                changeData(undefined, undefined, undefined, undefined, 'Confirm', undefined)
+                // changeData(undefined, undefined, undefined, undefined, 'Confirm', undefined)
 
-                await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData)
+                // await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData)
 
                 twiml.say({
                     language: 'es',
@@ -120,9 +120,9 @@ router.post('/validation', async (req, res) => {
                 }, 'Usted confirmó que la dirección es correcta. Lo contactaremos por WhatsApp para confirmar la fecha de envío.')
                 break;
             case '2':
-                changeData(undefined, undefined, undefined, undefined, 'Change', undefined)
+                // changeData(undefined, undefined, undefined, undefined, 'Change', undefined)
 
-                await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData);                
+                // await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData);                
 
                 const gather = twiml.gather({
                     input: 'speech dtmf',
@@ -148,7 +148,6 @@ router.post('/validation', async (req, res) => {
                     voice: 'Polly.Mia-Neural'
                 },`Usted indicó que su dirección es incorrecta, por favor diga claro y despacio su dirección en 2 segundos`)
 
-                twiml.pause({ length: 7 });
                 break;
             default:
                 console.log("There isn't data")
@@ -221,7 +220,6 @@ router.post('/change-address', async (req, res) => {
 
 router.post('/change-address-two', async (req,res) => {
     const digitPressed = req.body.Digits
-
     const twiml = new VoiceResponse()
 
     switch(digitPressed) {
@@ -263,6 +261,7 @@ router.post('/change-address-two', async (req,res) => {
             }, 'Opción no válida. Por favor, intenta de nuevo.');
             break;
     }
+    res.type('text/xml').send(twiml.toString());
 })
 
 router.post('/change-address-three', (req, res) => {
@@ -285,6 +284,8 @@ router.post('/change-address-three', (req, res) => {
         language: 'es',
         voice: 'Polly.Mia-Neural',
     }, 'Marque 1 si está correcta la dirección, Marque 2 para decirla de nuevo')
+
+    res.type('text/xml').send(twiml.toString());
 })
 
 module.exports = router;
