@@ -45,31 +45,32 @@ router.post('/call', async (req, res) => {
         }
 
         const twiml = new VoiceResponse();
-        changeData(userID, recordID, clientNumber, addressOne + ' - ' + addressDetails, undefined, call.sid)
-
+        
         twiml.say({ 
             language: 'es-MX',
             voice: 'Polly.Mia-Neural'
         }, `Hola ${firstName} ${lastName}, lo llamamos desde la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`)
-
+        
         const gather = twiml.gather({
             numDigits: 1,
             action: 'https://call-api-phi.vercel.app/validation',
             method: 'POST',
             timeout: 5
         });
-          
+        
         gather.say({
             language: 'es-MX',
             voice: 'Polly.Mia-Neural',
             timeout: 15,
         }, 'Marque el número 1, si está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.')
-
+        
         const call = await twilio.calls.create({
             twiml: twiml.toString(),
             to: clientNumber,
             from: process.env.SUPPORT_NUMBER
         })
+        
+        changeData(userID, recordID, clientNumber, addressOne + ' - ' + addressDetails, undefined, call.sid)
 
         twiml.redirect('https://call-api-phi.vercel.app/repeat')
 
