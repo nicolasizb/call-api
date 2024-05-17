@@ -148,7 +148,7 @@ router.post('/validation', async (req, res) => {
                         'Calle 127 Bis 16 30 3',
                     ],
                     speechModel: 'numbers_and_commands',
-                    speechTimeout: 'auto', 
+                    speechTimeout: 10, 
                     enhanced: true,
                     timeout: 10
                 })
@@ -264,7 +264,7 @@ router.post('/change-address-two', async (req,res) => {
                     'Calle 127 Bis 16 30 3',
                 ],
                 speechModel: 'numbers_and_commands',
-                speechTimeout: 'auto', 
+                speechTimeout: 10, 
                 enhanced: true,
                 timeout: 10
             })
@@ -344,7 +344,7 @@ router.post('/change-address-four', async (req,res) => {
                     'Calle 127 Bis 16 30 3',
                 ],
                 speechModel: 'numbers_and_commands',
-                speechTimeout: 'auto', 
+                speechTimeout: 10, 
                 enhanced: true,
                 timeout: 10
             })
