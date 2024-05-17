@@ -138,9 +138,9 @@ router.post('/validation', async (req, res) => {
                     ],
                     // sensibility: 0.7,
                     speechModel: 'phone_call',
+                    speechTimeout: 'auto', 
+                    enhanced: true,
                     timeout: 10
-                    // speechTimeout: 'auto', 
-                    // enhanced: true
                 })
 
                 gather.say({
