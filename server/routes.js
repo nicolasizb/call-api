@@ -125,7 +125,7 @@ router.post('/validation', async (req, res) => {
                 // await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData);                
 
                 const gather = twiml.gather({
-                    input: 'speech dtmf',
+                    input: 'speech',
                     language: 'es',
                     action: 'https://call-api-phi.vercel.app/change-address',
                     method: 'POST',
@@ -134,7 +134,18 @@ router.post('/validation', async (req, res) => {
                         'Número de la vía',
                         'Letra (si aplica)',
                         'Número (si aplica)',
-                        'Número de casa o apartamento'
+                        'Número de casa o apartamento',
+                        'Carrera 7 # 14-68',
+                        'Carrera 7 14 68',
+                        'Carrera siete catorce sesenta y ocho',
+                        'Calle 71A Bis # 14-68 Apto 201 Entre Carrera 7 y Carrera 9',
+                        'Avenida Boyacá Cl 53 Sur # 72D',
+                        'Avenida Boyacá Calle 53 Sur 72D',
+                        'Avenida Boyacá 53 Sur 72D',
+                        'Calle 127 Bis # 16-30 Int. 3',
+                        'Calle 127 Bis 16 30 Int 3',
+                        'Calle 127 Bis # 16-30 Interior 3',
+                        'Calle 127 Bis 16 30 3',
                     ],
                     speechModel: 'phone_call',
                     speechTimeout: 'auto', 
@@ -230,7 +241,7 @@ router.post('/change-address-two', async (req,res) => {
             break;
         case '2':
             const gather = twiml.gather({
-                input: 'speech dtmf',
+                input: 'speech',
                 language: 'es',
                 action: 'https://call-api-phi.vercel.app/change-address-three',
                 method: 'POST',
@@ -239,7 +250,18 @@ router.post('/change-address-two', async (req,res) => {
                     'Número de la vía',
                     'Letra (si aplica)',
                     'Número (si aplica)',
-                    'Número de casa o apartamento'
+                    'Número de casa o apartamento',
+                    'Carrera 7 # 14-68',
+                    'Carrera 7 14 68',
+                    'Carrera siete catorce sesenta y ocho',
+                    'Calle 71A Bis # 14-68 Apto 201 Entre Carrera 7 y Carrera 9',
+                    'Avenida Boyacá Cl 53 Sur # 72D',
+                    'Avenida Boyacá Calle 53 Sur 72D',
+                    'Avenida Boyacá 53 Sur 72D',
+                    'Calle 127 Bis # 16-30 Int. 3',
+                    'Calle 127 Bis 16 30 Int 3',
+                    'Calle 127 Bis # 16-30 Interior 3',
+                    'Calle 127 Bis 16 30 3',
                 ],
                 speechModel: 'phone_call',
                 speechTimeout: 'auto', 
@@ -299,7 +321,7 @@ router.post('/change-address-four', async (req,res) => {
             break;
         case '2':
             const gather = twiml.gather({
-                input: 'speech dtmf',
+                input: 'speech',
                 language: 'es',
                 action: 'https://call-api-phi.vercel.app/change-address-five',
                 method: 'POST',
@@ -308,7 +330,18 @@ router.post('/change-address-four', async (req,res) => {
                     'Número de la vía',
                     'Letra (si aplica)',
                     'Número (si aplica)',
-                    'Número de casa o apartamento'
+                    'Número de casa o apartamento',
+                    'Carrera 7 # 14-68',
+                    'Carrera 7 14 68',
+                    'Carrera siete catorce sesenta y ocho',
+                    'Calle 71A Bis # 14-68 Apto 201 Entre Carrera 7 y Carrera 9',
+                    'Avenida Boyacá Cl 53 Sur # 72D',
+                    'Avenida Boyacá Calle 53 Sur 72D',
+                    'Avenida Boyacá 53 Sur 72D',
+                    'Calle 127 Bis # 16-30 Int. 3',
+                    'Calle 127 Bis 16 30 Int 3',
+                    'Calle 127 Bis # 16-30 Interior 3',
+                    'Calle 127 Bis 16 30 3',
                 ],
                 speechModel: 'phone_call',
                 speechTimeout: 'auto', 
