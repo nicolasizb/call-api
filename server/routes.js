@@ -138,7 +138,7 @@ router.post('/validation', async (req, res) => {
                     ],
                     sensibility: 0.7,
                     speechModel: 'phone_call',
-                    speechTimeout: 14, 
+                    speechTimeout: 'auto', 
                     enhanced: true
                 })
 
@@ -167,7 +167,7 @@ router.post('/validation', async (req, res) => {
 });
 
 router.post('/change-address', async (req, res) => {
-    const speechResult = req.body.speechResult
+    const speechResult = req.body.SpeechResult
     
     const twiml = new VoiceResponse()
 
