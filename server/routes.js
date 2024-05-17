@@ -49,43 +49,43 @@ router.post('/call', async (req, res) => {
         twiml.say({ 
             language: 'es-MX',
             voice: 'Polly.Mia-Neural'
-        }, `Hola ${firstName} ${lastName}, lo llamamos desde la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`)
+        }, `Hola ${firstName} ${lastName || ''}, lo llamamos de ${store} para confirmar su dirección de envío. ¿Es ${addressOne}, ${addressDetails || ''}, en ${city}?`)
         
         const gather = twiml.gather({
             numDigits: 1,
             action: 'https://call-api-phi.vercel.app/validation',
             method: 'POST',
-            timeout: 3
-        });
+            timeout: 5
+        })
         
         gather.say({
             language: 'es-MX',
             voice: 'Polly.Mia-Neural',
-        }, 'Marque el número 1, si está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.')
+        }, 'Marque el número 1, si está correcta la dirección. O marque el número 2, para cambiarla.')
 
         twiml.say({
             language: 'es-MX',
             voice: 'Polly.Mia-Neural'
-        }, `Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`);
+        }, `Su dirección es ${addressOne}, ${addressDetails || ''}, en ${city}?`)
 
         for (let i = 0; i<= 2; i++) {
             const repeatGather = twiml.gather({
                 numDigits: 1,
                 action: 'https://call-api-phi.vercel.app/validation',
                 method: 'POST',
-                timeout: 3
-            });
+                timeout: 5
+            })
         
             repeatGather.say({
                 language: 'es-MX',
                 voice: 'Polly.Mia-Neural'
-            }, 'Marque el número 1, si está correcta la dirección. O marque el número 2, para cambiar la dirección de envío de su pedido.')
+            }, 'Marque el número 1, si está correcta la dirección. O marque el número 2, para cambiarla.')
         }
 
         twiml.say({
             language: 'es-MX',
             voice: 'Polly.Mia-Neural'
-        }, 'Nos pondremos en contacto con usted')
+        }, 'Usted alcanzó el límite de intentos, nos pondremos en contacto con usted pronto')
         
         const call = await twilio.calls.create({
             twiml: twiml.toString(),
@@ -117,7 +117,7 @@ router.post('/validation', async (req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural'
-                }, 'Usted confirmó que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.')
+                }, 'Usted confirmó que la dirección es correcta. Lo contactaremos por WhatsApp para confirmar la fecha de envío.')
                 break;
             case '2':
                 changeData(undefined, undefined, undefined, undefined, 'Change', undefined)
@@ -125,18 +125,27 @@ router.post('/validation', async (req, res) => {
                 await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData);                
 
                 const gather = twiml.gather({
+                    input: 'speech',
                     language: 'es-MX',
-                    numDigits: 1,
                     action: 'https://call-api-phi.vercel.app/change-address',
-                    method: 'POST'
+                    method: 'POST',
+                    hints: [
+                        'Tipo de vía (Calle, Carrera, Avenida, Diagonal)',
+                        'Número de la vía',
+                        'Letra (si aplica)',
+                        'Número (si aplica)',
+                        'Número de casa o apartamento'
+                    ],
+                    sensibility: 0.7,
+                    speechModel: 'phone_call',
+                    speechTimeout: 14, 
+                    enhanced: true
                 })
 
                 gather.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural'
-                },`Usted indicó que su dirección es incorrecta, por favor:
-
-                Marque 1 si autoriza que le escribamos por WhatsApp para el cambio de dirección. O marque 2 para confirmar la entrega en la dirección ${ userData.address }.`);
+                },`Usted indicó que su dirección es incorrecta, por favor diga claro y despacio su dirección en 2 segundos`);
 
                 twiml.pause({ length: 7 });
                 break;
@@ -158,38 +167,45 @@ router.post('/validation', async (req, res) => {
 });
 
 router.post('/change-address', async (req, res) => {
-    const digitPressed = req.body.Digits
+    const speechResult = req.body.speechResult
     
     const twiml = new VoiceResponse()
 
-    switch(digitPressed) {
-        case '1' :
-            changeData(undefined, undefined, undefined, undefined, 'Change', undefined)        
+    twiml.say({
+        language: 'es-MX',
+        voice: 'Polly.Mia-Neural',
+        timeout: 14
+    }, `Su dirección es ${speechResult}?`)
 
-            await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData)
 
-            twiml.say({
-                language: 'es-MX',
-                voice: 'Polly.Mia-Neural'
-            }, 'Nos pondremos en contacto con usted lo más pronto posible.');
-            break;
-        case '2':
-            changeData(undefined, undefined, undefined, undefined, 'Confirm', undefined)   
+    // switch(speechResult) {
+    //     case '1' :
+    //         changeData(undefined, undefined, undefined, undefined, 'Change', undefined)        
 
-            await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData)
+    //         await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData)
 
-            twiml.say({
-                language: 'es-MX',
-                voice: 'Polly.Mia-Neural'
-            }, `Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`)
-            break;
-        default:
-            twiml.say({
-                language: 'es-MX',
-                voice: 'Polly.Mia-Neural'
-            }, 'Opción no válida. Por favor, intenta de nuevo.');
-            break;
-    }
-    res.type('text/xml').send(twiml.toString());
+    //         twiml.say({
+    //             language: 'es-MX',
+    //             voice: 'Polly.Mia-Neural'
+    //         }, 'Nos pondremos en contacto con usted lo más pronto posible.');
+    //         break;
+    //     case '2':
+    //         changeData(undefined, undefined, undefined, undefined, 'Confirm', undefined)   
+
+    //         await axios.post('https://hooks.zapier.com/hooks/catch/18682335/3jauqjw/', userData)
+
+    //         twiml.say({
+    //             language: 'es-MX',
+    //             voice: 'Polly.Mia-Neural'
+    //         }, `Usted acaba de confirmar que la dirección mencionada es correcta, nos pondremos en contacto con usted por WhatsApp para confirmar fecha de envío.`)
+    //         break;
+    //     default:
+    //         twiml.say({
+    //             language: 'es-MX',
+    //             voice: 'Polly.Mia-Neural'
+    //         }, 'Opción no válida. Por favor, intenta de nuevo.');
+    //         break;
+    // }
+    // res.type('text/xml').send(twiml.toString());
 })
 module.exports = router;
