@@ -126,7 +126,7 @@ router.post('/validation', async (req, res) => {
 
                 const gather = twiml.gather({
                     input: 'speech',
-                    language: 'es',
+                    language: 'es-MX',
                     action: 'https://call-api-phi.vercel.app/change-address',
                     method: 'POST',
                     hints: [
@@ -242,7 +242,7 @@ router.post('/change-address-two', async (req,res) => {
         case '2':
             const gather = twiml.gather({
                 input: 'speech',
-                language: 'es',
+                language: 'es-MX',
                 action: 'https://call-api-phi.vercel.app/change-address-three',
                 method: 'POST',
                 hints: [
@@ -322,7 +322,7 @@ router.post('/change-address-four', async (req,res) => {
         case '2':
             const gather = twiml.gather({
                 input: 'speech',
-                language: 'es',
+                language: 'es-MX',
                 action: 'https://call-api-phi.vercel.app/change-address-five',
                 method: 'POST',
                 hints: [
