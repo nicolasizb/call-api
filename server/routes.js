@@ -41,6 +41,10 @@ router.post('/call', async (req, res) => {
         if (!userID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
             throw new Error("Datos inválidos")
         }
+
+        userData.address = addressOne + ' - ' + addressDetails + ' en ' + city
+
+        console.log(userData)
         
         twiml.say({ 
             language: 'es-MX',
@@ -51,7 +55,7 @@ router.post('/call', async (req, res) => {
             numDigits: 1,
             action: 'https://call-api-phi.vercel.app/validation',
             method: 'POST',
-            timeout: 5
+            timeout: 10
         });
         
         gather.say({
@@ -93,7 +97,7 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        changeData(userID, clientNumber, addressOne + ' - ' + addressDetails + ' en ' + city, undefined, call.sid)
+        changeData(userID, clientNumber, userData.address, undefined, call.sid)
 
         res.status(200).json({ userID: userID, SID: call.sid  })
     } catch (error) {
@@ -137,9 +141,14 @@ router.post('/validation', async (req, res) => {
                 }, `Marque el número 1, si está correcta. O marque el número 2 para cambiar dirección de envío.`)
 
                 for (let i = 0; i<= 2; i++) {
+                    twiml.say({
+                        language: 'es-MX',
+                        voice: 'Polly.Mia-Neural'
+                    }, `¿Su dirección es ${userData.address}?`)
+
                     const repeatGather = twiml.gather({
                         numDigits: 1,
-                        action: 'https://call-api-phi.vercel.app/validation',
+                        action: 'https://call-api-phi.vercel.app/change-address',
                         method: 'POST',
                         timeout: 10
                     });
@@ -165,7 +174,7 @@ router.post('/validation', async (req, res) => {
                         numDigits: 1,
                         action: 'https://call-api-phi.vercel.app/validation',
                         method: 'POST',
-                        timeout: 4
+                        timeout: 8
                     })
                 
                     gather.say({
@@ -224,7 +233,7 @@ router.post('/change-address', async (req, res) => {
                 for (let i = 0; i<= 2; i++) {
                     const repeatGather = twiml.gather({
                         numDigits: 1,
-                        action: 'https://call-api-phi.vercel.app/validation',
+                        action: 'https://call-api-phi.vercel.app/filter',
                         method: 'POST',
                         timeout: 10
                     });
@@ -250,7 +259,7 @@ router.post('/change-address', async (req, res) => {
                         numDigits: 1,
                         action: 'https://call-api-phi.vercel.app/change-address',
                         method: 'POST',
-                        timeout: 4
+                        timeout: 8
                     })
                 
                     gather.say({
@@ -310,7 +319,7 @@ router.post('/send-email', async(req, res) => {
                         numDigits: 1,
                         action: 'https://call-api-phi.vercel.app/send-email',
                         method: 'POST',
-                        timeout: 10
+                        timeout: 8
                     })
                 
                     gather.say({
