@@ -137,7 +137,7 @@ router.post('/validation', async (req, res) => {
                         'Calle 127 Bis # 16-30 Interior 3',
                         'Calle 127 Bis 16 30 3',
                     ],
-                    speechModel: 'phone_call',
+                    speechModel: 'experimental_conversations',
                     speechTimeout: 'auto',                      
                     enhanced: true,
                     timeout: 10
@@ -241,7 +241,7 @@ router.post('/change-address-two', async (req,res) => {
                     'Calle 127 Bis # 16-30 Interior 3',
                     'Calle 127 Bis 16 30 3',
                 ],
-                speechModel: 'phone_call',
+                speechModel: 'experimental_conversations',
                 speechTimeout: 'auto',                  
                 enhanced: true,
                 timeout: 10
@@ -315,7 +315,7 @@ router.post('/change-address-four', async (req,res) => {
                     'Calle 127 Bis # 16-30 Interior 3',
                     'Calle 127 Bis 16 30 3',
                 ],
-                speechModel: 'phone_call',
+                speechModel: 'experimental_conversations',
                 speechTimeout: 'auto',                  
                 enhanced: true,
                 timeout: 10
