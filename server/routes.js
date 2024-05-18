@@ -9,19 +9,15 @@ const twilio = require('twilio')(accountSid, authToken)
 
 let userData = {
     userID: '',
-    recordID: '',
     number: '',
     address: '',
     digit: '',  
     callSID: '',
 };
 
-function changeData(userID, recordID, number, address, digit, callSID) {
+function changeData(userID, number, address, digit, callSID) {
     if (typeof userID !== 'undefined') {
         userData.userID = userID
-    }
-    if (typeof recordID !== 'undefined') {
-        userData.recordID = recordID
     }
     if (typeof number !== 'undefined') {
         userData.number = number
@@ -93,9 +89,9 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        changeData(userID, recordID, clientNumber, addressOne + ' - ' + addressDetails, undefined, call.sid)
+        changeData(userID, clientNumber, addressOne + ' - ' + addressDetails, undefined, call.sid)
 
-        res.status(200).json({ userID: userID, SID: call.sid, recordID: recordID })
+        res.status(200).json({ userID: userID, SID: call.sid  })
     } catch (error) {
         console.error(error)
         res.status(400).json({ error: error.message })
