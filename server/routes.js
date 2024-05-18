@@ -39,8 +39,8 @@ function changeData(userID, recordID, number, address, digit, callSID) {
 
 router.post('/call', async (req, res) => {    
     try {
-        const { userID, recordID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
-        if (!userID || !recordID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
+        const { userID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
+        if (!userID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
             throw new Error("Datos inválidos")
         }
 
