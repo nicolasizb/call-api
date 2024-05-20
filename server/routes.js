@@ -1,5 +1,67 @@
+const { GoogleAuth } = require('google-auth-library')
+const { google } = require('googleapis');
+
+async function getGoogleSheet() {
+    const auth = await new GoogleAuth({
+        keyFile: 'credentials.json',
+        scopes: 'https://www.googleapis.com/auth/spreadsheets.readonly'
+    })
+
+    const sheets = google.sheets({version: 'v4', auth})
+
+    try {
+        const response = await sheets.spreadsheets.values.get({
+          spreadsheetId: '1TwiU0Rv_Yt8oAEroYWMx5gfWxipM0XOYplMBcFGPlNc',
+          range: 'Sheet1'
+        })
+      
+        console.log(response.data.values)
+      } catch(err) {
+        console.error('The API returned an error: ', err)
+        return []
+    }      
+}
+
+async function updateGoogleSheet(range, valuesToUpdate) {
+    const auth = await new GoogleAuth({
+        keyFile: 'credentials.json',
+        scopes: 'https://www.googleapis.com/auth/spreadsheets'
+    });
+
+    const sheets = google.sheets({ version: 'v4', auth });
+
+    try {
+        const response = await sheets.spreadsheets.values.update({
+            spreadsheetId: '1TwiU0Rv_Yt8oAEroYWMx5gfWxipM0XOYplMBcFGPlNc',
+            range: range,
+            valueInputOption: 'RAW',
+            resource: { values: valuesToUpdate }
+        });
+
+        console.log(`${response.data.updatedCells} celdas actualizadas.`);
+    } catch (err) {
+        console.error('Ocurrió un error al intentar actualizar la hoja de cálculo:', err);
+    }
+}
+
+async function main() {
+    const data = getGoogleSheet()
+
+    const range = 'A5:B6'; 
+    const valuesToUpdate = [
+        ['Nuevo valor A1', 'Nuevo valor B1'],
+        ['Nuevo valor A4', 'Nuevo valor B2']
+    ];
+
+    updateGoogleSheet(range, valuesToUpdate);
+
+    console.log(data)
+}
+
+main()
+
 const express = require('express')
-const axios = require('axios')
+const axios = require('axios');
 const router = express.Router()
 const VoiceResponse = require('twilio').twiml.VoiceResponse
 
