@@ -226,7 +226,7 @@ router.post('/call', async (req, res) => {
 
 router.post('/validation', async (req, res) => {
     try {
-        const digitPressed = '1'
+        const digitPressed = req.body.Digits
         const twiml = new VoiceResponse()
 
         switch (digitPressed) { 
