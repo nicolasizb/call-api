@@ -95,7 +95,7 @@ router.post('/call', async (req, res) => {
         }
 
         userData.address = addressOne + ' - ' + addressDetails + ' en ' + city
-        
+
         twiml.say({ 
             language: 'es-MX',
             voice: 'Polly.Mia-Neural'
@@ -157,15 +157,15 @@ router.post('/call', async (req, res) => {
 })
 
 router.post('/validation', async (req, res) => {
-    const digitPressed = req.body.Digits
-    const twiml = new VoiceResponse()
-
     try {
+        const digitPressed = '1'
+        const twiml = new VoiceResponse()
+
         switch (digitPressed) { 
             case '1':
                 changeData(undefined, undefined, undefined, 'Confirm', undefined)
 
-                await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vhsjyd/', userData)
+                // await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vhsjyd/', userData)
 
                 twiml.say({
                     language: 'es-MX',
@@ -241,7 +241,6 @@ router.post('/validation', async (req, res) => {
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural'
                 }, 'Nos pondremos en contacto con usted por correo electrónico para confirmar su dirección.')
-
                 break;
         }        
         res.type('text/xml').send(twiml.toString());
