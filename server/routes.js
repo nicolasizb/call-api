@@ -14,36 +14,36 @@ let userData = {
     userID:  '',
     store: '',
     date: '',
-    number: '', 
-    address: '', 
+    digit: '', 
     budget: '', 
+    number: '', 
     email: '', 
     firstName: '', 
     lastName: '', 
+    address: '', 
     city: '', 
-    countCalls: '', 
-    digit: '', 
-    callSID: ''
+    countCalls: 0, 
+    callSID: []
 }
 
-function changeData(userID, store, date, number, address, budget, email, firstName, lastName, city, countCalls, digit, callSID) {
-    if (typeof userID !== 'undefined') {
-        userData.userID = userID
-    }
+function changeData(userID, store, date, number, address, budget, email, firstName, lastName, city, countCalls, digit, SID) {
     if (typeof store !== 'undefined') {
         userData.store = store
+    }
+    if (typeof userID !== 'undefined') {
+        userData.userID = userID
     }
     if (typeof date !== 'undefined') {
         userData.date = date
     }
-    if (typeof number !== 'undefined') {
-        userData.number = number
-    }
-    if (typeof address !== 'undefined') {
-        userData.address = address
+    if (typeof digit !== 'undefined') {
+        userData.digit = digit
     }
     if (typeof budget !== 'undefined') {
         userData.budget = budget
+    }
+    if (typeof number !== 'undefined') {
+        userData.number = number
     }
     if (typeof email !== 'undefined') {
         userData.email = email
@@ -54,17 +54,20 @@ function changeData(userID, store, date, number, address, budget, email, firstNa
     if (typeof lastName !== 'undefined') {
         userData.lastName = lastName
     }
+    if (typeof addressOne !== 'undefined') {
+        userData.addressOne = addressOne
+    }
+    if (typeof addressDetails !== 'undefined') {
+        userData.addressDetails = addressDetails
+    }
     if (typeof city !== 'undefined') {
         userData.city = city
     }
     if (typeof countCalls !== 'undefined') {
         userData.countCalls = countCalls
     }
-    if (typeof digit !== 'undefined') {
-        userData.digit = digit
-    }
-    if (typeof callSID !== 'undefined') {
-        userData.callSID = callSID
+    if (typeof SID !== 'undefined') {
+        userData.callSID.push(SID)
     }
 }
 
@@ -80,8 +83,8 @@ router.get('/read-db', async (req, res) => {
         const sheets = google.sheets({ version: 'v4', auth })
 
         const response = await sheets.spreadsheets.values.get({
-          spreadsheetId: '1TwiU0Rv_Yt8oAEroYWMx5gfWxipM0XOYplMBcFGPlNc',
-          range: 'Sheet1'
+            spreadsheetId: process.env.SPREADSHEET,
+            range: 'Sheet1'
         })
 
         res.status(200).json(response.data.values)
@@ -91,7 +94,7 @@ router.get('/read-db', async (req, res) => {
     }
 })
 
-router.post('/write-db', async (req, res) => {
+async function insertClientData() {
     try {
         const credentials = JSON.parse(process.env.GOO_CREDENTIALS)
       
@@ -103,32 +106,46 @@ router.post('/write-db', async (req, res) => {
         const sheets = google.sheets({ version: 'v4', auth })
 
         const valuesToUpdate = [
-            [userData.store, userData.userID, userData.date, userData.clientNumber, userData.address, userData.budget, userData.emailAddress, userData.firstName, userData.lastName, userData.city, userData.countCalls, userData.digit, userData.callSID],
+            [ 
+                userData.store, 
+                userData.userID, 
+                userData.date, 
+                userData.digit, 
+                userData.budget, 
+                userData.clientNumber, 
+                userData.emailAddress, 
+                userData.firstName, 
+                userData.lastName, 
+                userData.addressOne, 
+                userData.addressDetails, 
+                userData.city, 
+                userData.countCalls, 
+                userData.callSID.join(',')
+            ],
         ]
 
-        const response = await sheets.spreadsheets.values.update({
-          spreadsheetId: '1TwiU0Rv_Yt8oAEroYWMx5gfWxipM0XOYplMBcFGPlNc',
-          range: "A2:M2",
-          valueInputOption: 'RAW',
-          resource: { values: valuesToUpdate }
+        await sheets.spreadsheets.values.update({
+            spreadsheetId: process.env.SPREADSHEET,
+            range: "A2:N2",
+            valueInputOption: 'RAW',
+            resource: { values: valuesToUpdate }
         })
 
-
-        res.status(200).json(`${response.data.updatedCells} cells updated.`)
-    } catch (err) {
-        console.error('An error occurred while trying to update the spreadsheet:', err)
+        console.log(valuesToUpdate)
+    } catch (error) {
+        console.error(error)
     }
-})
+}
 
 router.post('/call', async (req, res) => {    
     try {
         const twiml = new VoiceResponse()
-        const { store, userID, date, budget, clientNumber, emailAddress, firstName, lastName, addressOne, addressDetails, city, countCalls } = req.body;
-
+        const { store, userID, date, budget, clientNumber, emailAddress, firstName, lastName, addressOne, addressDetails, city } = req.body;
+        
         if (!store | !userID | !date | !budget | !clientNumber | !emailAddress | !firstName | !lastName | !addressOne | !addressDetails | !city | !countCalls ) {
             throw new Error("Datos inválidos")
         }
-
+        
         const address = addressOne + ' - ' + addressDetails + ' en ' + city
 
         twiml.say({ 
@@ -182,7 +199,23 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        changeData(userID, store, date, clientNumber, address, budget, emailAddress, firstName, lastName, city, countCalls, undefined, call.sid)
+        counterCalls()
+
+        changeData(
+            store,
+            date,
+            undefined,
+            budget,
+            clientNumber,
+            emailAddress,
+            firstName,
+            lastName,
+            addressOne,
+            addressDetails,
+            city,
+            undefined,
+            call.sid
+        );
 
         res.status(200).json({ userID: userID, SID: call.sid  })
     } catch (error) {
@@ -193,14 +226,28 @@ router.post('/call', async (req, res) => {
 
 router.post('/validation', async (req, res) => {
     try {
-        const digitPressed = req.body.Digits
+        const digitPressed = '1'
         const twiml = new VoiceResponse()
 
         switch (digitPressed) { 
             case '1':
-                changeData({digit: "Confirmado"})
+                changeData(
+                    undefined,
+                    undefined,
+                    "Confirmado",
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined
+                );
 
-                await axios.post('https://call-api-phi.vercel.app/write-db')
+                await insertClientData()
 
                 twiml.say({
                     language: 'es-MX',
