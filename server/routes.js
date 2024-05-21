@@ -1,3 +1,5 @@
+const { GoogleAuth } = require('google-auth-library');
+const { google } = require('googleapis');
 
 const express = require('express')
 const axios = require('axios');
@@ -33,6 +35,55 @@ function changeData(userID, number, address, digit, callSID) {
         userData.callSID = callSID
     }
 }
+
+router.get('/read-db', async (req, res) => {
+    try {
+        const credentials = JSON.parse(process.env.GOO_CREDENTIALS)
+
+        const auth = new GoogleAuth({
+            credentials: credentials,
+            scopes: 'https://www.googleapis.com/auth/spreadsheets.readonly'
+        })
+    
+        const sheets = google.sheets({ version: 'v4', auth })
+
+        const response = await sheets.spreadsheets.values.get({
+          spreadsheetId: '1TwiU0Rv_Yt8oAEroYWMx5gfWxipM0XOYplMBcFGPlNc',
+          range: 'Sheet1'
+        })
+
+        res.status(200).json(response.data.values)
+    } catch (err) {
+        console.error('The API returned an error: ', err);
+        return []
+    }
+})
+
+router.post('/write-db', async (req, res) => {
+    try {
+        const { range, valuesToUpdate } = req.body
+
+        const credentials = JSON.parse(process.env.GOO_CREDENTIALS)
+      
+        const auth = new GoogleAuth({
+            credentials: credentials,
+            scopes: 'https://www.googleapis.com/auth/spreadsheets'
+        })
+    
+        const sheets = google.sheets({ version: 'v4', auth })
+
+        const response = await sheets.spreadsheets.values.update({
+          spreadsheetId: '1TwiU0Rv_Yt8oAEroYWMx5gfWxipM0XOYplMBcFGPlNc',
+          range: range,
+          valueInputOption: 'RAW',
+          resource: { values: valuesToUpdate }
+        })
+
+        res.status(200).json(`${response.data.updatedCells} cells updated.`)
+    } catch (err) {
+        console.error('An error occurred while trying to update the spreadsheet:', err)
+    }
+})
 
 router.post('/call', async (req, res) => {    
     try {
