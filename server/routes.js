@@ -27,7 +27,7 @@ let userData = {
     callSID: []
 }
 
-async function changeData( store, userID, date, digit, budget, number, email, firstName, lastName, addressOne, addressDetails, city, countCalls,  SID) {
+function changeData({ store, userID, date, digit, budget, number, email, firstName, lastName, addressOne, addressDetails, city, countCalls,  SID}) {
     if (typeof store !== 'undefined') {
         userData.store = store
     }
@@ -248,7 +248,7 @@ router.post('/validation', async (req, res) => {
                     userData.call.sid
                 );
 
-                await insertClientData()
+                insertClientData()
 
                 twiml.say({
                     language: 'es-MX',
