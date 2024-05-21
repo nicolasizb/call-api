@@ -27,51 +27,17 @@ let userData = {
     callSID: []
 }
 
-function changeData({ store, userID, date, digit, budget, number, email, firstName, lastName, addressOne, addressDetails, city, countCalls,  SID}) {
-    if (typeof store !== 'undefined') {
-        userData.store = store
-    }
-    if (typeof userID !== 'undefined') {
-        userData.userID = userID
-    }
-    if (typeof date !== 'undefined') {
-        userData.date = date
-    }
-    if (typeof digit !== 'undefined') {
-        userData.digit = digit
-    }
-    if (typeof budget !== 'undefined') {
-        userData.budget = budget
-    }
-    if (typeof number !== 'undefined') {
-        userData.number = number
-    }
-    if (typeof email !== 'undefined') {
-        userData.email = email
-    }
-    if (typeof firstName !== 'undefined') {
-        userData.firstName = firstName
-    }
-    if (typeof lastName !== 'undefined') {
-        userData.lastName = lastName
-    }
-    if (typeof addressOne !== 'undefined') {
-        userData.addressOne = addressOne
-    }
-    if (typeof addressDetails !== 'undefined') {
-        userData.addressDetails = addressDetails
-    }
-    if (typeof city !== 'undefined') {
-        userData.city = city
-    }
-    if (typeof countCalls !== 'undefined') {
-        userData.countCalls = countCalls
-    }
-    if (typeof SID !== 'undefined') {
-        userData.callSID.push(SID)
-    }
-
-    return userData
+function changeData(newData) {
+    Object.keys(newData).forEach(key => {
+        if (newData[key] !== undefined) {
+            if (key === 'SID') {
+                userData.callSID.push(newData[key]);
+            } else {
+                userData[key] = newData[key];
+            }
+        }
+    });
+    return userData;
 }
 
 router.get('/read-db', async (req, res) => {
@@ -97,7 +63,7 @@ router.get('/read-db', async (req, res) => {
     }
 })
 
-async function insertClientData() {
+async function insertClientData(data) {
     try {
         const credentials = JSON.parse(process.env.GOO_CREDENTIALS)
       
@@ -110,20 +76,20 @@ async function insertClientData() {
 
         const valuesToUpdate = [
             [ 
-                userData.store, 
-                userData.userID, 
-                userData.date, 
-                userData.digit, 
-                userData.budget, 
-                userData.clientNumber, 
-                userData.emailAddress, 
-                userData.firstName, 
-                userData.lastName, 
-                userData.addressOne, 
-                userData.addressDetails, 
-                userData.city, 
-                userData.countCalls, 
-                userData.callSID.join(',')
+                data.store, 
+                data.userID, 
+                data.date, 
+                data.digit, 
+                data.budget, 
+                data.number, 
+                data.email, 
+                data.firstName, 
+                data.lastName, 
+                data.addressOne, 
+                data.addressDetails, 
+                data.city, 
+                data.countCalls, 
+                data.callSID.join(',')
             ],
         ]
 
@@ -184,9 +150,9 @@ router.post('/call', async (req, res) => {
                 voice: 'Polly.Mia-Neural'
             }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección mencionada.')
 
-            if(i === 2) {
-                changeData(undefined, undefined, undefined, 'Change', undefined)        
-            }
+            // if(i === 2) {
+            //     changeData(undefined, undefined, undefined, 'Change', undefined)        
+            // }
         }
 
         twiml.say({
@@ -200,22 +166,24 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        changeData(
-            store,
-            userID,
-            date,
-            undefined,
-            budget,
-            clientNumber,
-            emailAddress,
-            firstName,
-            lastName,
-            addressOne,
-            addressDetails,
-            city,
-            0,
-            call.sid
-        );
+        changeData({
+            store: store,
+            userID: userID,
+            date: date,
+            digit: undefined,
+            budget: budget,
+            number: clientNumber,
+            email: emailAddress,
+            firstName: firstName,
+            lastName: lastName,
+            addressOne: addressOne,
+            addressDetails: addressDetails,
+            city: city,
+            countCalls: 0,
+            SID: undefined
+        })
+
+        console.log(userData)
 
         res.status(200).json({ userID: userID, SID: call.sid  })
     } catch (error) {
@@ -226,29 +194,16 @@ router.post('/call', async (req, res) => {
 
 router.post('/validation', async (req, res) => {
     try {
-        const digitPressed = req.body.Digits
+        const digitPressed = '1'
         const twiml = new VoiceResponse()
 
         switch (digitPressed) { 
             case '1':
-                changeData(
-                    userData.store,
-                    userData.userID,
-                    userData.date,
-                    "Confirmado",
-                    userData.budget,
-                    userData.clientNumber,
-                    userData.emailAddress,
-                    userData.firstName,
-                    userData.lastName,
-                    userData.addressOne,
-                    userData.addressDetails,
-                    userData.city,
-                    userData.countCalls,
-                    userData.call.sid
-                );
+                changeData({
+                    digit: "Confirmado",
+                })
 
-                insertClientData()
+                await insertClientData(userData)
 
                 twiml.say({
                     language: 'es-MX',
