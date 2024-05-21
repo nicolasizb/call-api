@@ -26,7 +26,7 @@ let userData = {
     callSID: []
 }
 
-function changeData(userID, store, date, number, address, budget, email, firstName, lastName, city, countCalls, digit, SID) {
+function changeData( store, userID, date, digit, budget, number, email, firstName, lastName, addressOne, addressDetails, city, countCalls,  SID) {
     if (typeof store !== 'undefined') {
         userData.store = store
     }
@@ -142,11 +142,9 @@ router.post('/call', async (req, res) => {
         const twiml = new VoiceResponse()
         const { store, userID, date, budget, clientNumber, emailAddress, firstName, lastName, addressOne, addressDetails, city } = req.body;
         
-        if (!store | !userID | !date | !budget | !clientNumber | !emailAddress | !firstName | !lastName | !addressOne | !addressDetails | !city | !countCalls ) {
+        if (!store | !userID | !date | !budget | !clientNumber | !emailAddress | !firstName | !lastName | !addressOne | !addressDetails | !city ) {
             throw new Error("Datos inválidos")
         }
-        
-        const address = addressOne + ' - ' + addressDetails + ' en ' + city
 
         twiml.say({ 
             language: 'es-MX',
@@ -199,8 +197,6 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        counterCalls()
-
         changeData(
             store,
             date,
@@ -216,6 +212,8 @@ router.post('/call', async (req, res) => {
             undefined,
             call.sid
         );
+
+        console.log(userData)
 
         res.status(200).json({ userID: userID, SID: call.sid  })
     } catch (error) {
