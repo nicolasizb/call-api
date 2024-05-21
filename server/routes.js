@@ -118,28 +118,28 @@ router.post('/call', async (req, res) => {
             voice: 'Polly.Mia-Neural'
         }, `Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`);
 
-        for (let i = 0; i<= 2; i++) {
-            const repeatGather = twiml.gather({
-                numDigits: 1,
-                action: 'https://call-api-phi.vercel.app/validation',
-                method: 'POST',
-                timeout: 10
-            });
+        // for (let i = 0; i<= 2; i++) {
+        //     const repeatGather = twiml.gather({
+        //         numDigits: 1,
+        //         action: 'https://call-api-phi.vercel.app/validation',
+        //         method: 'POST',
+        //         timeout: 10
+        //     });
         
-            repeatGather.say({
-                language: 'es-MX',
-                voice: 'Polly.Mia-Neural'
-            }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección mencionada.')
+        //     repeatGather.say({
+        //         language: 'es-MX',
+        //         voice: 'Polly.Mia-Neural'
+        //     }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección mencionada.')
 
-            if(i === 2) {
-                changeData(undefined, undefined, undefined, 'Change', undefined)        
-            }
-        }
+        //     if(i === 2) {
+        //         changeData(undefined, undefined, undefined, 'Change', undefined)        
+        //     }
+        // }
 
-        twiml.say({
-            language: 'es-MX',
-            voice: 'Polly.Mia-Neural'
-        }, 'Nos pondremos en contacto con usted por correo electrónico para confirmar su dirección.')
+        // twiml.say({
+        //     language: 'es-MX',
+        //     voice: 'Polly.Mia-Neural'
+        // }, 'Nos pondremos en contacto con usted por correo electrónico para confirmar su dirección.')
         
         const call = await twilio.calls.create({
             twiml: twiml.toString(),
@@ -158,7 +158,7 @@ router.post('/call', async (req, res) => {
 
 router.post('/validation', async (req, res) => {
     try {
-        const digitPressed = '1'
+        const digitPressed = req.body.Digits
         const twiml = new VoiceResponse()
 
         switch (digitPressed) { 
@@ -190,28 +190,28 @@ router.post('/validation', async (req, res) => {
                     voice: 'Polly.Mia-Neural'
                 }, `Marque el número 1, si está correcta. O marque el número 2 para cambiar dirección de envío.`)
 
-                for (let i = 0; i<= 2; i++) {
-                    twiml.say({
-                        language: 'es-MX',
-                        voice: 'Polly.Mia-Neural'
-                    }, `¿Su dirección es ${userData.address}?`)
+                // for (let i = 0; i<= 2; i++) {
+                //     twiml.say({
+                //         language: 'es-MX',
+                //         voice: 'Polly.Mia-Neural'
+                //     }, `¿Su dirección es ${userData.address}?`)
 
-                    const repeatGather = twiml.gather({
-                        numDigits: 1,
-                        action: 'https://call-api-phi.vercel.app/change-address',
-                        method: 'POST',
-                        timeout: 10
-                    });
+                //     const repeatGather = twiml.gather({
+                //         numDigits: 1,
+                //         action: 'https://call-api-phi.vercel.app/change-address',
+                //         method: 'POST',
+                //         timeout: 10
+                //     });
                 
-                    repeatGather.say({
-                        language: 'es-MX',
-                        voice: 'Polly.Mia-Neural'
-                    }, 'Marque el número 1, si está correcta. O marque el número 2 para cambiar dirección de envío.')
+                //     repeatGather.say({
+                //         language: 'es-MX',
+                //         voice: 'Polly.Mia-Neural'
+                //     }, 'Marque el número 1, si está correcta. O marque el número 2 para cambiar dirección de envío.')
         
-                    if(i === 2) {
-                        changeData(undefined, undefined, undefined, 'Change', undefined)        
-                    }
-                }
+                //     if(i === 2) {
+                //         changeData(undefined, undefined, undefined, 'Change', undefined)        
+                //     }
+                // }
 
                 twiml.say({
                     language: 'es-MX',
