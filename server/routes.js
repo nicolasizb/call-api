@@ -11,22 +11,54 @@ const authToken = process.env.AUTH_TOKEN
 const twilio = require('twilio')(accountSid, authToken)
 
 let userData = {
-    userID: '',
-    number: '',
-    address: '',
-    digit: '',  
-    callSID: '',
+    userID:  '',
+    store: '',
+    date: '',
+    number: '', 
+    address: '', 
+    budget: '', 
+    email: '', 
+    firstName: '', 
+    lastName: '', 
+    city: '', 
+    countCalls: '', 
+    digit: '', 
+    callSID: ''
 }
 
-function changeData(userID, number, address, digit, callSID) {
+function changeData(userID, store, date, number, address, budget, email, firstName, lastName, city, countCalls, digit, callSID) {
     if (typeof userID !== 'undefined') {
         userData.userID = userID
+    }
+    if (typeof store !== 'undefined') {
+        userData.store = store
+    }
+    if (typeof date !== 'undefined') {
+        userData.date = date
     }
     if (typeof number !== 'undefined') {
         userData.number = number
     }
     if (typeof address !== 'undefined') {
         userData.address = address
+    }
+    if (typeof budget !== 'undefined') {
+        userData.budget = budget
+    }
+    if (typeof email !== 'undefined') {
+        userData.email = email
+    }
+    if (typeof firstName !== 'undefined') {
+        userData.firstName = firstName
+    }
+    if (typeof lastName !== 'undefined') {
+        userData.lastName = lastName
+    }
+    if (typeof city !== 'undefined') {
+        userData.city = city
+    }
+    if (typeof countCalls !== 'undefined') {
+        userData.countCalls = countCalls
     }
     if (typeof digit !== 'undefined') {
         userData.digit = digit
@@ -61,8 +93,6 @@ router.get('/read-db', async (req, res) => {
 
 router.post('/write-db', async (req, res) => {
     try {
-        const { range, valuesToUpdate } = req.body
-
         const credentials = JSON.parse(process.env.GOO_CREDENTIALS)
       
         const auth = new GoogleAuth({
@@ -72,12 +102,17 @@ router.post('/write-db', async (req, res) => {
     
         const sheets = google.sheets({ version: 'v4', auth })
 
+        const valuesToUpdate = [
+            [userData.store, userData.userID, userData.date, userData.clientNumber, userData.address, userData.budget, userData.emailAddress, userData.firstName, userData.lastName, userData.city, userData.countCalls, userData.digit, userData.callSID],
+        ]
+
         const response = await sheets.spreadsheets.values.update({
           spreadsheetId: '1TwiU0Rv_Yt8oAEroYWMx5gfWxipM0XOYplMBcFGPlNc',
-          range: range,
+          range: "A2:M2",
           valueInputOption: 'RAW',
           resource: { values: valuesToUpdate }
         })
+
 
         res.status(200).json(`${response.data.updatedCells} cells updated.`)
     } catch (err) {
@@ -88,13 +123,13 @@ router.post('/write-db', async (req, res) => {
 router.post('/call', async (req, res) => {    
     try {
         const twiml = new VoiceResponse()
-        const { userID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
+        const { store, userID, date, budget, clientNumber, emailAddress, firstName, lastName, addressOne, addressDetails, city, countCalls } = req.body;
 
-        if (!userID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
+        if (!store | !userID | !date | !budget | !clientNumber | !emailAddress | !firstName | !lastName | !addressOne | !addressDetails | !city | !countCalls ) {
             throw new Error("Datos inválidos")
         }
 
-        userData.address = addressOne + ' - ' + addressDetails + ' en ' + city
+        const address = addressOne + ' - ' + addressDetails + ' en ' + city
 
         twiml.say({ 
             language: 'es-MX',
@@ -111,35 +146,35 @@ router.post('/call', async (req, res) => {
         gather.say({
             language: 'es-MX',
             voice: 'Polly.Mia-Neural',
-        }, 'Marque el número 1, si está correcta la dirección. O marque el número 2 para repetir la dirección mencionada.')
+        }, 'Marque el número 1, si está correcta la dirección. O marque el número 2 para repetirla.')
+
+        for (let i = 0; i<= 2; i++) {
+            twiml.say({
+                language: 'es-MX',
+                voice: 'Polly.Mia-Neural'
+            }, `Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`);
+
+            const repeatGather = twiml.gather({
+                numDigits: 1,
+                action: 'https://call-api-phi.vercel.app/validation',
+                method: 'POST',
+                timeout: 10
+            });
+        
+            repeatGather.say({
+                language: 'es-MX',
+                voice: 'Polly.Mia-Neural'
+            }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección mencionada.')
+
+            if(i === 2) {
+                changeData(undefined, undefined, undefined, 'Change', undefined)        
+            }
+        }
 
         twiml.say({
             language: 'es-MX',
             voice: 'Polly.Mia-Neural'
-        }, `Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`);
-
-        // for (let i = 0; i<= 2; i++) {
-        //     const repeatGather = twiml.gather({
-        //         numDigits: 1,
-        //         action: 'https://call-api-phi.vercel.app/validation',
-        //         method: 'POST',
-        //         timeout: 10
-        //     });
-        
-        //     repeatGather.say({
-        //         language: 'es-MX',
-        //         voice: 'Polly.Mia-Neural'
-        //     }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección mencionada.')
-
-        //     if(i === 2) {
-        //         changeData(undefined, undefined, undefined, 'Change', undefined)        
-        //     }
-        // }
-
-        // twiml.say({
-        //     language: 'es-MX',
-        //     voice: 'Polly.Mia-Neural'
-        // }, 'Nos pondremos en contacto con usted por correo electrónico para confirmar su dirección.')
+        }, 'Nos pondremos en contacto con usted por correo electrónico para confirmar su dirección.')
         
         const call = await twilio.calls.create({
             twiml: twiml.toString(),
@@ -147,7 +182,7 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        changeData(userID, clientNumber, userData.address, undefined, call.sid)
+        changeData(userID, store, date, clientNumber, address, budget, emailAddress, firstName, lastName, city, countCalls, undefined, call.sid)
 
         res.status(200).json({ userID: userID, SID: call.sid  })
     } catch (error) {
@@ -163,9 +198,9 @@ router.post('/validation', async (req, res) => {
 
         switch (digitPressed) { 
             case '1':
-                changeData(undefined, undefined, undefined, 'Confirm', undefined)
+                changeData({digit: "Confirmado"})
 
-                // await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vhsjyd/', userData)
+                await axios.post('https://call-api-phi.vercel.app/write-db')
 
                 twiml.say({
                     language: 'es-MX',
