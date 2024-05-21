@@ -95,8 +95,6 @@ router.post('/call', async (req, res) => {
         }
 
         userData.address = addressOne + ' - ' + addressDetails + ' en ' + city
-
-        console.log(userData)
         
         twiml.say({ 
             language: 'es-MX',
@@ -159,10 +157,10 @@ router.post('/call', async (req, res) => {
 })
 
 router.post('/validation', async (req, res) => {
-    try {
-        const digitPressed = req.body.Digits
-        const twiml = new VoiceResponse()
+    const digitPressed = req.body.Digits
+    const twiml = new VoiceResponse()
 
+    try {
         switch (digitPressed) { 
             case '1':
                 changeData(undefined, undefined, undefined, 'Confirm', undefined)
