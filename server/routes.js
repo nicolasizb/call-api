@@ -20,13 +20,14 @@ let userData = {
     email: '', 
     firstName: '', 
     lastName: '', 
-    address: '', 
+    addressOne: '', 
+    addressDetails: '', 
     city: '', 
     countCalls: 0, 
     callSID: []
 }
 
-function changeData( store, userID, date, digit, budget, number, email, firstName, lastName, addressOne, addressDetails, city, countCalls,  SID) {
+async function changeData( store, userID, date, digit, budget, number, email, firstName, lastName, addressOne, addressDetails, city, countCalls,  SID) {
     if (typeof store !== 'undefined') {
         userData.store = store
     }
@@ -69,6 +70,8 @@ function changeData( store, userID, date, digit, budget, number, email, firstNam
     if (typeof SID !== 'undefined') {
         userData.callSID.push(SID)
     }
+
+    return userData
 }
 
 router.get('/read-db', async (req, res) => {
@@ -199,6 +202,7 @@ router.post('/call', async (req, res) => {
 
         changeData(
             store,
+            userID,
             date,
             undefined,
             budget,
@@ -209,11 +213,9 @@ router.post('/call', async (req, res) => {
             addressOne,
             addressDetails,
             city,
-            undefined,
+            0,
             call.sid
         );
-
-        console.log(userData)
 
         res.status(200).json({ userID: userID, SID: call.sid  })
     } catch (error) {
@@ -230,19 +232,20 @@ router.post('/validation', async (req, res) => {
         switch (digitPressed) { 
             case '1':
                 changeData(
-                    undefined,
-                    undefined,
+                    userData.store,
+                    userData.userID,
+                    userData.date,
                     "Confirmado",
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined
+                    userData.budget,
+                    userData.clientNumber,
+                    userData.emailAddress,
+                    userData.firstName,
+                    userData.lastName,
+                    userData.addressOne,
+                    userData.addressDetails,
+                    userData.city,
+                    userData.countCalls,
+                    userData.call.sid
                 );
 
                 await insertClientData()
