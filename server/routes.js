@@ -124,7 +124,7 @@ router.post('/validation', async (req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural'
-                }, `¿Su dirección es ${userData.address} ?`)
+                }, `¿Su dirección es ${userData.address}?`)
 
                 const gather = twiml.gather({
                     numDigits: 1,
@@ -217,7 +217,7 @@ router.post('/change-address', async (req, res) => {
             case '2':
                 const gather = twiml.gather({
                     numDigits: 1,
-                    action: 'https://call-api-phi.vercel.app/filter',
+                    action: 'https://call-api-phi.vercel.app/send-message',
                     method: 'POST',
                     timeout: 10
                 })
@@ -230,7 +230,7 @@ router.post('/change-address', async (req, res) => {
                 for (let i = 0; i<= 2; i++) {
                     const repeatGather = twiml.gather({
                         numDigits: 1,
-                        action: 'https://call-api-phi.vercel.app/filter',
+                        action: 'https://call-api-phi.vercel.app/send-message',
                         method: 'POST',
                         timeout: 10
                     });
