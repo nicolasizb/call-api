@@ -131,7 +131,7 @@ router.post('/validation', async (req, res) => {
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
                     rate: 'slow'
-                }, `Su dirección es ${userData.addressOne} ${userData.addressDetails || ''} en ${city}?`)
+                }, `Su dirección es ${userData.address} en ${city}?`)
 
                 const gather = twiml.gather({
                     numDigits: 1,
@@ -151,7 +151,7 @@ router.post('/validation', async (req, res) => {
                         language: 'es-MX',
                         voice: 'Polly.Mia-Neural',
                         rate: 'slow'
-                    }, `Su dirección es ${userData.addressOne} ${userData.addressDetails || ''} en ${city}?`)
+                    }, `Su dirección es ${userData.address} en ${city}?`)
 
                     const repeatGather = twiml.gather({
                         numDigits: 1,
