@@ -230,7 +230,7 @@ router.post('/change-address', async (req, res) => {
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
                     rate: 'slow'
-                }, 'Usted confirmó que la dirección mencionada es correcta, gracias por su respuesta. ¡Hasta luego!');
+                }, 'Usted confirmó que la dirección mencionada es correcta. ¡Hasta luego!');
                 break;
             case '2':
                 const gather = twiml.gather({
