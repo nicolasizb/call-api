@@ -42,7 +42,7 @@ router.post('/call', async (req, res) => {
             throw new Error("Datos inválidos")
         }
 
-        twiml.pause({ length: 1 });
+        twiml.pause({ length: 2 });
 
         twiml.say({ 
             language: 'es-MX',
@@ -131,7 +131,7 @@ router.post('/validation', async (req, res) => {
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
                     rate: 'slow'
-                }, `¿Su dirección es ${userData.address}?`)
+                }, `Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`)
 
                 const gather = twiml.gather({
                     numDigits: 1,
@@ -151,7 +151,7 @@ router.post('/validation', async (req, res) => {
                         language: 'es-MX',
                         voice: 'Polly.Mia-Neural',
                         rate: 'slow'
-                    }, `¿Su dirección es ${userData.address}?`)
+                    }, `Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`)
 
                     const repeatGather = twiml.gather({
                         numDigits: 1,
