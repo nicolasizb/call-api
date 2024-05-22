@@ -11,11 +11,12 @@ let userData = {
     userID: '',
     number: '',
     address: '',
+    city: '',
     digit: '',  
     callSID: '',
 };
 
-function changeData(userID, number, address, digit, callSID) {
+function changeData(userID, number, address, city, digit, callSID) {
     if (typeof userID !== 'undefined') {
         userData.userID = userID
     }
@@ -24,6 +25,9 @@ function changeData(userID, number, address, digit, callSID) {
     }
     if (typeof address !== 'undefined') {
         userData.address = address
+    }
+    if (typeof city !== 'undefined') {
+        userData.city = city
     }
     if (typeof digit !== 'undefined') {
         userData.digit = digit
@@ -83,7 +87,7 @@ router.post('/call', async (req, res) => {
             }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección.')
 
             if(i === 2) {
-                changeData(undefined, undefined, undefined, 'Change', undefined)        
+                changeData(undefined, undefined, undefined, undefined, 'Cambiar', undefined)        
             }
         }
         twiml.say({
@@ -98,7 +102,7 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        changeData(userID, clientNumber, addressOne + ', ' + addressDetails, undefined, call.sid)
+        changeData(userID, clientNumber, addressOne + ', ' + addressDetails, city, undefined, call.sid)
 
         console.log(userData)
 
@@ -116,7 +120,7 @@ router.post('/validation', async (req, res) => {
 
         switch (digitPressed) { 
             case '1':
-                changeData(undefined, undefined, undefined, 'Confirmado', undefined)
+                changeData(undefined, undefined, undefined, undefined, 'Confirmado', undefined)        
 
                 await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
 
@@ -167,7 +171,7 @@ router.post('/validation', async (req, res) => {
                     }, 'Marque el número 1, si está correcta. O marque el número 2 para cambiar dirección de envío.')
         
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, 'Change', undefined)        
+                        changeData(undefined, undefined, undefined, undefined, 'Cambiar', undefined)        
                     }
                 }
 
@@ -218,7 +222,7 @@ router.post('/change-address', async (req, res) => {
         
         switch(digitPressed) {
             case '1' :
-                changeData(undefined, undefined, undefined, 'Confirmado', undefined)
+                changeData(undefined, undefined, undefined, undefined, 'Confirmado', undefined)        
 
                 await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
         
@@ -257,7 +261,7 @@ router.post('/change-address', async (req, res) => {
                     }, 'Marque 1 para autorizar que lo contactemos al whatsapp para cambiar la dirección. O marque 2 para confirmar que la dirección nombrada es correcta.')
         
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, 'Change', undefined)        
+                        changeData(undefined, undefined, undefined, undefined, 'Cambiar', undefined)        
                     }
                 }
 
@@ -283,7 +287,7 @@ router.post('/change-address', async (req, res) => {
                     }, 'Opción no válida. Marque 1 para autorizar que lo contactemos al whatsapp. O marque 2 para confirmar que la dirección nombrada es correcta.')
                     
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, 'Change', undefined)        
+                        changeData(undefined, undefined, undefined, undefined, 'Cambiar', undefined)        
                     }
                 }
                 
@@ -309,7 +313,7 @@ router.post('/send-message', async(req, res) => {
 
         switch(digitPressed) {
             case '1':
-                changeData(undefined, undefined, undefined, 'Cambiar', undefined)
+                changeData(undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
 
                 await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
 
@@ -321,7 +325,7 @@ router.post('/send-message', async(req, res) => {
 
                 break;
             case '2':
-                changeData(undefined, undefined, undefined, 'Confirmado', undefined)        
+                changeData(undefined, undefined, undefined, undefined, 'Confirmado', undefined)       
 
                 await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
 
