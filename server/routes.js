@@ -81,7 +81,6 @@ router.post('/call', async (req, res) => {
                 changeData(undefined, undefined, undefined, 'Change', undefined)        
             }
         }
-
         twiml.say({
             language: 'es-MX',
             voice: 'Polly.Mia-Neural'
