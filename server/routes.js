@@ -107,7 +107,6 @@ router.post('/validation', async (req, res) => {
     try {
         const digitPressed = req.body.Digits
         const twiml = new VoiceResponse()
-        const setAddress = userData.address
 
         switch (digitPressed) { 
             case '1':
@@ -124,7 +123,7 @@ router.post('/validation', async (req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural'
-                }, `¿Su dirección es ${setAddress}?`)
+                }, `¿Su dirección es ${userData.address}?`)
 
                 const gather = twiml.gather({
                     numDigits: 1,
