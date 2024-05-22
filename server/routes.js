@@ -1,6 +1,3 @@
-const { GoogleAuth } = require('google-auth-library');
-const { google } = require('googleapis');
-
 const express = require('express')
 const axios = require('axios');
 const router = express.Router()
@@ -11,114 +8,44 @@ const authToken = process.env.AUTH_TOKEN
 const twilio = require('twilio')(accountSid, authToken)
 
 let userData = {
-    userID:  '',
-    store: '',
-    date: '',
-    digit: '', 
-    budget: '', 
-    number: '', 
-    email: '', 
-    firstName: '', 
-    lastName: '', 
-    addressOne: '', 
-    addressDetails: '', 
-    city: '', 
-    countCalls: 0, 
-    callSID: []
-}
+    userID: '',
+    number: '',
+    address: '',
+    digit: '',  
+    callSID: '',
+};
 
-function changeData(newData) {
-    Object.keys(newData).forEach(key => {
-        if (newData[key] !== undefined) {
-            if (key === 'SID') {
-                userData.callSID.push(newData[key]);
-            } else {
-                userData[key] = newData[key];
-            }
-        }
-    });
-    return userData;
-}
-
-router.get('/read-db', async (req, res) => {
-    try {
-        const credentials = JSON.parse(process.env.GOO_CREDENTIALS)
-
-        const auth = new GoogleAuth({
-            credentials: credentials,
-            scopes: 'https://www.googleapis.com/auth/spreadsheets.readonly'
-        })
-    
-        const sheets = google.sheets({ version: 'v4', auth })
-
-        const response = await sheets.spreadsheets.values.get({
-            spreadsheetId: process.env.SPREADSHEET,
-            range: 'Sheet1'
-        })
-
-        res.status(200).json(response.data.values)
-    } catch (err) {
-        console.error('The API returned an error: ', err);
-        return []
+function changeData(userID, number, address, digit, callSID) {
+    if (typeof userID !== 'undefined') {
+        userData.userID = userID
     }
-})
-
-async function insertClientData(data) {
-    try {
-        const credentials = JSON.parse(process.env.GOO_CREDENTIALS)
-      
-        const auth = new GoogleAuth({
-            credentials: credentials,
-            scopes: 'https://www.googleapis.com/auth/spreadsheets'
-        })
-    
-        const sheets = google.sheets({ version: 'v4', auth })
-
-        const valuesToUpdate = [
-            [ 
-                data.store, 
-                data.userID, 
-                data.date, 
-                data.digit, 
-                data.budget, 
-                data.number, 
-                data.email, 
-                data.firstName, 
-                data.lastName, 
-                data.addressOne, 
-                data.addressDetails, 
-                data.city, 
-                data.countCalls, 
-                data.callSID.join(',')
-            ],
-        ]
-
-        await sheets.spreadsheets.values.update({
-            spreadsheetId: process.env.SPREADSHEET,
-            range: "A2:N2",
-            valueInputOption: 'RAW',
-            resource: { values: valuesToUpdate }
-        })
-
-        console.log(valuesToUpdate)
-    } catch (error) {
-        console.error(error)
+    if (typeof number !== 'undefined') {
+        userData.number = number
+    }
+    if (typeof address !== 'undefined') {
+        userData.address = address
+    }
+    if (typeof digit !== 'undefined') {
+        userData.digit = digit
+    }
+    if (typeof callSID !== 'undefined') {
+        userData.callSID = callSID
     }
 }
 
 router.post('/call', async (req, res) => {    
     try {
         const twiml = new VoiceResponse()
-        const { store, userID, date, budget, clientNumber, emailAddress, firstName, lastName, addressOne, addressDetails, city } = req.body;
-        
-        if (!store | !userID | !date | !budget | !clientNumber | !emailAddress | !firstName | !lastName | !addressOne | !addressDetails | !city ) {
+
+        const { userID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
+        if (!userID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
             throw new Error("Datos inválidos")
         }
 
         twiml.say({ 
             language: 'es-MX',
             voice: 'Polly.Mia-Neural'
-        }, `Hola ${firstName} ${lastName}, lo llamamos desde la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`)
+        }, `Hola ${firstName} ${lastName}, lo llamamos desde la tienda ${store} para informarle que su pedido ya fue despachado y queremos confirmar la dirección de envío de su pedido. ¿Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`)
         
         const gather = twiml.gather({
             numDigits: 1,
@@ -166,22 +93,7 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        changeData({
-            store: store,
-            userID: userID,
-            date: date,
-            digit: undefined,
-            budget: budget,
-            number: clientNumber,
-            email: emailAddress,
-            firstName: firstName,
-            lastName: lastName,
-            addressOne: addressOne,
-            addressDetails: addressDetails,
-            city: city,
-            countCalls: 0,
-            SID: undefined
-        })
+        changeData(userID, clientNumber, addressOne + ' - ' + addressDetails, undefined, call.sid)
 
         console.log(userData)
 
@@ -194,16 +106,14 @@ router.post('/call', async (req, res) => {
 
 router.post('/validation', async (req, res) => {
     try {
-        const digitPressed = '1'
+        const digitPressed = req.body.Digits
         const twiml = new VoiceResponse()
 
         switch (digitPressed) { 
             case '1':
-                changeData({
-                    digit: "Confirmado",
-                })
+                changeData(undefined, undefined, undefined, 'Confirmado', undefined)
 
-                await insertClientData(userData)
+                await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
 
                 twiml.say({
                     language: 'es-MX',
@@ -295,9 +205,9 @@ router.post('/change-address', async (req, res) => {
         
         switch(digitPressed) {
             case '1' :
-                changeData(undefined, undefined, undefined, 'Confirm', undefined)        
-        
-                await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vhsjyd/', userData)
+                changeData(undefined, undefined, undefined, 'Confirmado', undefined)
+
+                await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
         
                 twiml.say({
                     language: 'es-MX',
@@ -380,9 +290,9 @@ router.post('/send-email', async(req, res) => {
 
         switch(digitPressed) {
             case '1':
-                changeData(undefined, undefined, undefined, 'Change', undefined)        
+                changeData(undefined, undefined, undefined, 'Cambiar', undefined)
 
-                await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vhsjyd/', userData)
+                await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
 
                 twiml.say({
                     language: 'es-MX',
@@ -391,9 +301,9 @@ router.post('/send-email', async(req, res) => {
 
                 break;
             case '2':
-                changeData(undefined, undefined, undefined, 'Confirm', undefined)        
+                changeData(undefined, undefined, undefined, 'Confirmado', undefined)        
 
-                await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vhsjyd/', userData)
+                await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
 
                 twiml.say({
                     language: 'es-MX',
