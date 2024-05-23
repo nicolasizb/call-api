@@ -17,28 +17,14 @@ let userData = {
     callSID: '',
 };
 
-function changeData(userID, number, address, city, digit, callSID) {
-    if (typeof userID !== 'undefined') {
-        userData.userID = userID
-    }
-    if (typeof store !== 'undefined') {
-        userData.store = store
-    }
-    if (typeof number !== 'undefined') {
-        userData.number = number
-    }
-    if (typeof address !== 'undefined') {
-        userData.address = address
-    }
-    if (typeof city !== 'undefined') {
-        userData.city = city
-    }
-    if (typeof digit !== 'undefined') {
-        userData.digit = digit
-    }
-    if (typeof callSID !== 'undefined') {
-        userData.callSID = callSID
-    }
+function changeData(userID, store, number, address, city, digit, callSID) {
+    if (userID !== undefined) userData.userID = userID;
+    if (store !== undefined) userData.store = store;
+    if (number !== undefined) userData.number = number;
+    if (address !== undefined) userData.address = address;
+    if (city !== undefined) userData.city = city;
+    if (digit !== undefined) userData.digit = digit;
+    if (callSID !== undefined) userData.callSID = callSID;
 }
 
 router.post('/call', async (req, res) => {    
@@ -108,9 +94,7 @@ router.post('/call', async (req, res) => {
 
         changeData(userID, store, clientNumber, addressOne + ', ' + addressDetails, city, undefined, call.sid)
 
-        console.log(userData)
-
-        res.status(200).json({ userID: userID, SID: call.sid  })
+        res.status(200).json({ userID: userID, SID: call.sid })
     } catch (error) {
         console.error(error)
         res.status(400).json({ error: error.message })
@@ -124,11 +108,11 @@ router.post('/validation', async (req, res) => {
 
         switch (digitPressed) { 
             case '1':
-                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined)        
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined)      
 
-                if(userData.store === 'Velez') {
+                if(userData.store == 'Velez') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
-                } else if (userData.store === 'Will') {
+                } else if (userData.store == 'Will') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vq7qsy/', userData)
                 } else {
                     console.error('Not found store')
