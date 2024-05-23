@@ -92,7 +92,7 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        changeData(userID, store, clientNumber, addressOne + ', ' + addressDetails, city, undefined, call.sid)
+        changeData(userID, store, clientNumber, addressOne + ', ' + `${addressDetails || ''}`, city, undefined, call.sid)
 
         res.status(200).json({ userID: userID, SID: call.sid })
     } catch (error) {
