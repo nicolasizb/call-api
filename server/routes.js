@@ -91,7 +91,7 @@ router.post('/call', async (req, res) => {
             }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección.')
 
             if(i === 2) {
-                changeData(userID, store, clientNumber, addressOne + ', ' + addressDetails, city, 'Cambiar', call.sid)
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)
             }
         }
         twiml.say({
