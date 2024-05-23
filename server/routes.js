@@ -9,6 +9,7 @@ const twilio = require('twilio')(accountSid, authToken)
 
 let userData = {
     userID: '',
+    store: '',
     number: '',
     address: '',
     city: '',
@@ -19,6 +20,9 @@ let userData = {
 function changeData(userID, number, address, city, digit, callSID) {
     if (typeof userID !== 'undefined') {
         userData.userID = userID
+    }
+    if (typeof store !== 'undefined') {
+        userData.store = store
     }
     if (typeof number !== 'undefined') {
         userData.number = number
@@ -87,7 +91,7 @@ router.post('/call', async (req, res) => {
             }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección.')
 
             if(i === 2) {
-                changeData(undefined, undefined, undefined, undefined, 'Cambiar', undefined)        
+                changeData(userID, store, clientNumber, addressOne + ', ' + addressDetails, city, 'Cambiar', call.sid)
             }
         }
         twiml.say({
@@ -102,7 +106,7 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        changeData(userID, clientNumber, addressOne + ', ' + addressDetails, city, undefined, call.sid)
+        changeData(userID, store, clientNumber, addressOne + ', ' + addressDetails, city, undefined, call.sid)
 
         console.log(userData)
 
@@ -120,9 +124,15 @@ router.post('/validation', async (req, res) => {
 
         switch (digitPressed) { 
             case '1':
-                changeData(undefined, undefined, undefined, undefined, 'Confirmado', undefined)        
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined)        
 
-                await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
+                if(userData.store === 'Velez') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
+                } else if (userData.store === 'Will') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vq7qsy/', userData)
+                } else {
+                    console.error('Not found store')
+                }
 
                 twiml.say({
                     language: 'es-MX',
@@ -171,7 +181,7 @@ router.post('/validation', async (req, res) => {
                     }, 'Marque el número 1, si está correcta. O marque el número 2 para cambiar dirección de envío.')
         
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, 'Cambiar', undefined)        
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                     }
                 }
 
@@ -197,7 +207,7 @@ router.post('/validation', async (req, res) => {
                     }, 'Opción no válida. Marque el número 1, si está correcta. O marque el número 2 para cambiar dirección de envío.')
                     
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, 'Change', undefined)        
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                     }
                 }
                 
@@ -222,9 +232,15 @@ router.post('/change-address', async (req, res) => {
         
         switch(digitPressed) {
             case '1' :
-                changeData(undefined, undefined, undefined, undefined, 'Confirmado', undefined)        
-
-                await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined)       
+                
+                if(userData.store === 'Velez') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
+                } else if (userData.store === 'Will') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vq7qsy/', userData)
+                } else {
+                    console.error('Not found store')
+                }
         
                 twiml.say({
                     language: 'es-MX',
@@ -261,7 +277,7 @@ router.post('/change-address', async (req, res) => {
                     }, 'Marque 1 para autorizar que lo contactemos al whatsapp para cambiar la dirección. O marque 2 para confirmar que la dirección nombrada es correcta.')
         
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, 'Cambiar', undefined)        
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                     }
                 }
 
@@ -287,7 +303,7 @@ router.post('/change-address', async (req, res) => {
                     }, 'Opción no válida. Marque 1 para autorizar que lo contactemos al whatsapp. O marque 2 para confirmar que la dirección nombrada es correcta.')
                     
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, 'Cambiar', undefined)        
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                     }
                 }
                 
@@ -313,9 +329,15 @@ router.post('/send-message', async(req, res) => {
 
         switch(digitPressed) {
             case '1':
-                changeData(undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
-
-                await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
+                
+                if(userData.store === 'Velez') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
+                } else if (userData.store === 'Will') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vq7qsy/', userData)
+                } else {
+                    console.error('Not found store')
+                }
 
                 twiml.say({
                     language: 'es-MX',
@@ -325,9 +347,15 @@ router.post('/send-message', async(req, res) => {
 
                 break;
             case '2':
-                changeData(undefined, undefined, undefined, undefined, 'Confirmado', undefined)       
-
-                await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined)       
+                
+                if(userData.store === 'Velez') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
+                } else if (userData.store === 'Will') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vq7qsy/', userData)
+                } else {
+                    console.error('Not found store')
+                }
 
                 twiml.say({
                     language: 'es-MX',
@@ -351,7 +379,7 @@ router.post('/send-message', async(req, res) => {
                     }, 'Opción no válida. Marque 1 para autorizar que lo contactemos al whatsapp. O marque 2 para confirmar que la dirección nombrada es correcta.')
 
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, 'Change', undefined)        
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                     }
                 }
 
