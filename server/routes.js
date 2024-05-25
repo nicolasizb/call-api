@@ -18,25 +18,25 @@ let userData = {
 };
 
 function changeData(userID, store, number, address, city, digit, callSID) {
-    if (userID !== undefined) userData.userID = userID;
-    if (store !== undefined) userData.store = store;
-    if (number !== undefined) userData.number = number;
-    if (address !== undefined) userData.address = address;
-    if (city !== undefined) userData.city = city;
-    if (digit !== undefined) userData.digit = digit;
-    if (callSID !== undefined) userData.callSID = callSID;
+    if (userID !== undefined) userData.userID = userID
+    if (store !== undefined) userData.store = store
+    if (number !== undefined) userData.number = number
+    if (address !== undefined) userData.address = address
+    if (city !== undefined) userData.city = city
+    if (digit !== undefined) userData.digit = digit
+    if (callSID !== undefined) userData.callSID = callSID
 }
 
 router.post('/call', async (req, res) => {    
     try {
         const twiml = new VoiceResponse()
 
-        const { userID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body;
+        const { userID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body
         if (!userID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
             throw new Error("Datos inválidos")
         }
 
-        twiml.pause({ length: 1.5 });
+        twiml.pause({ length: 2 })
 
         const message = `Hola ${firstName} ${lastName}, le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${addressOne}, ${addressDetails || ''}, en ${city}`
 
@@ -51,7 +51,7 @@ router.post('/call', async (req, res) => {
             action: 'https://call-api-phi.vercel.app/validation',
             method: 'POST',
             timeout: 10
-        });
+        })
         
         gather.say({
             language: 'es-MX',
@@ -64,14 +64,14 @@ router.post('/call', async (req, res) => {
                 language: 'es-MX',
                 voice: 'Polly.Mia-Neural',
                 rate: '82%'
-            }, `Su dirección es: ${addressOne}, ${addressDetails || ''} en ${city}?`);
+            }, `Su dirección es: ${addressOne}, ${addressDetails || ''} en ${city}?`)
 
             const repeatGather = twiml.gather({
                 numDigits: 1,
                 action: 'https://call-api-phi.vercel.app/validation',
                 method: 'POST',
                 timeout: 10
-            });
+            })
         
             repeatGather.say({
                 language: 'es-MX',
@@ -206,10 +206,10 @@ router.post('/validation', async (req, res) => {
                 }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
                 break;
         }        
-        res.type('text/xml').send(twiml.toString());
+        res.type('text/xml').send(twiml.toString())
     } catch (error) {
         console.error(error);       
-        res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error.message })
     }    
 });
 
@@ -306,7 +306,7 @@ router.post('/change-address', async (req, res) => {
     res.type('text/xml').send(twiml.toString())
     } catch (error) {
         console.error(error);       
-        res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error.message })
     }    
 })
 
@@ -408,8 +408,8 @@ router.post('/send-message', async(req, res) => {
         }
     res.type('text/xml').send(twiml.toString())
     } catch (error) {
-        console.error(error);       
-        res.status(400).json({ error: error.message });
+        console.error(error)      
+        res.status(400).json({ error: error.message })
     } 
 })
 
@@ -483,8 +483,8 @@ router.post('/finish', async (req, res) => {
         }
     res.type('text/xml').send(twiml.toString())
     } catch (error) {
-        console.error(error);       
-        res.status(400).json({ error: error.message });
+        console.error(error)
+        res.status(400).json({ error: error.message })
     } 
 })
 
