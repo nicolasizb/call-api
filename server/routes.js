@@ -73,7 +73,8 @@ router.post('/call', async (req, res) => {
         
             repeatGather.say({
                 language: 'es-MX',
-                voice: 'Polly.Mia-Neural'
+                voice: 'Polly.Mia-Neural',
+                rate: '83%'
             }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección.')
 
             if(i === 2) {
