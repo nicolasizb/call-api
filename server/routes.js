@@ -350,6 +350,31 @@ router.post('/send-message', async(req, res) => {
                     rate: '83%'
                 }, `Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.`)
 
+                for (let i = 0; i<= 2; i++) {
+                    const repeatGather = twiml.gather({
+                        numDigits: 1,
+                        action: 'https://call-api-phi.vercel.app/finish',
+                        method: 'POST',
+                        timeout: 10
+                    });
+                
+                    repeatGather.say({
+                        language: 'es-MX',
+                        voice: 'Polly.Mia-Neural',
+                        rate: '83%'
+                    }, 'Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.')
+        
+                    if(i === 2) {
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
+                    }
+                }
+
+                twiml.say({
+                    language: 'es-MX',
+                    voice: 'Polly.Mia-Neural',
+                    rate: '83%'
+                }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
+
                 break;
             default:
                 for (let i = 0; i<= 2; i++) {
@@ -423,7 +448,7 @@ router.post('/finish', async (req, res) => {
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
                     rate: '83%'
-                }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
+                }, 'Nos pondremos en contacto con usted pronto.')
 
                 break;
             default:
@@ -450,7 +475,7 @@ router.post('/finish', async (req, res) => {
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
                     rate: '83%'
-                }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
+                }, 'Nos pondremos en contacto con usted pronto.')
                 break;
         }
     res.type('text/xml').send(twiml.toString())
