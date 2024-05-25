@@ -36,10 +36,10 @@ router.post('/call', async (req, res) => {
             throw new Error("Datos inválidos")
         }
 
-        twiml.pause({ length: 2 })
-
         const message = `Hola ${firstName} ${lastName}, le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${addressOne}, ${addressDetails || ''}, en ${city}`
-
+        
+        twiml.pause({ length: 2 })
+        
         twiml.say({ 
             language: 'es-MX',
             voice: 'Polly.Mia-Neural',
