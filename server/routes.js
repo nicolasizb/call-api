@@ -1,5 +1,6 @@
 const express = require('express')
 const axios = require('axios');
+const { twiml } = require('twilio');
 const router = express.Router()
 const VoiceResponse = require('twilio').twiml.VoiceResponse
 
@@ -42,7 +43,7 @@ router.post('/call', async (req, res) => {
             language: 'es-MX',
             voice: 'Polly.Mia-Neural',
             rate: '83%'
-        }, `Hola ${firstName} ${lastName}, lo llamamos desde la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Su dirección es ${addressOne}, ${addressDetails || ''} en ${city}?`)
+        }, `Hola ${firstName} ${lastName}, le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${addressOne}, ${addressDetails || ''}, en ${city}`)
         
         const gather = twiml.gather({
             numDigits: 1,
@@ -62,7 +63,7 @@ router.post('/call', async (req, res) => {
                 language: 'es-MX',
                 voice: 'Polly.Mia-Neural',
                 rate: '83%'
-            }, `Su dirección es ${addressOne} ${addressDetails || ''} en ${city}?`);
+            }, `Su dirección es: ${addressOne}, ${addressDetails || ''} en ${city}?`);
 
             const repeatGather = twiml.gather({
                 numDigits: 1,
@@ -115,6 +116,7 @@ router.post('/validation', async (req, res) => {
                 } else if (userData.store == 'Will') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vq7qsy/', userData)
                 } else {
+                    // another webhook
                     console.error('Not found store')
                 }
 
@@ -129,7 +131,7 @@ router.post('/validation', async (req, res) => {
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
                     rate: '83%'
-                }, `Su dirección es ${userData.address} en ${userData.city}?`)
+                }, `Su dirección es: ${userData.address} en ${userData.city}?`)
 
                 const gather = twiml.gather({
                     numDigits: 1,
@@ -244,7 +246,7 @@ router.post('/change-address', async (req, res) => {
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
                     rate: '83%'
-                }, `Marque 1 para autorizar que lo contactemos al whatsapp para cambiar la dirección. O marque 2 para confirmar que la dirección ${userData.address} es correcta.`)
+                }, `Marque 1 para autorizar que lo contactemos al whatsapp para cambiar la dirección. O marque 2 para repetir la dirección actual.`)
 
                 for (let i = 0; i<= 2; i++) {
                     const repeatGather = twiml.gather({
@@ -258,7 +260,7 @@ router.post('/change-address', async (req, res) => {
                         language: 'es-MX',
                         voice: 'Polly.Mia-Neural',
                         rate: '83%'
-                    }, 'Marque 1 para autorizar que lo contactemos al whatsapp para cambiar la dirección. O marque 2 para confirmar que la dirección nombrada es correcta.')
+                    }, 'Marque 1 para autorizar que lo contactemos al whatsapp para cambiar la dirección. O marque 2 para repetir la dirección actual.')
         
                     if(i === 2) {
                         changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
@@ -284,7 +286,7 @@ router.post('/change-address', async (req, res) => {
                         language: 'es-MX',
                         voice: 'Polly.Mia-Neural',
                         rate: '83%'
-                    }, 'Opción no válida. Marque 1 para autorizar que lo contactemos al whatsapp. O marque 2 para confirmar que la dirección nombrada es correcta.')
+                    }, 'Opción no válida. Marque 1 para autorizar que lo contactemos al whatsapp para cambiar la dirección. O marque 2 para repetir la dirección actual.')
                     
                     if(i === 2) {
                         changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
@@ -328,24 +330,27 @@ router.post('/send-message', async(req, res) => {
                     voice: 'Polly.Mia-Neural',
                     rate: '83%'
                 }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
-
                 break;
             case '2':
-                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined)       
-                
-                if(userData.store === 'Velez') {
-                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
-                } else if (userData.store === 'Will') {
-                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vq7qsy/', userData)
-                } else {
-                    console.error('Not found store')
-                }
-
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
                     rate: '83%'
-                }, 'Usted confirmó que la dirección es correcta, gracias por su respuesta. ¡Hasta luego!');
+                }, `Su dirección es: ${userData.address} en ${userData.city}?`)
+
+                const gather = twiml.gather({
+                    numDigits: 1,
+                    action: 'https://call-api-phi.vercel.app/finish',
+                    method: 'POST',
+                    timeout: 10
+                })
+
+                gather.say({
+                    language: 'es-MX',
+                    voice: 'Polly.Mia-Neural',
+                    rate: '83%'
+                }, `Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.`)
+
                 break;
             default:
                 for (let i = 0; i<= 2; i++) {
@@ -360,7 +365,82 @@ router.post('/send-message', async(req, res) => {
                         language: 'es-MX',
                         voice: 'Polly.Mia-Neural',
                         rate: '83%'
-                    }, 'Opción no válida. Marque 1 para autorizar que lo contactemos al whatsapp. O marque 2 para confirmar que la dirección nombrada es correcta.')
+                    }, 'Opción no válida. Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.')
+
+                    if(i === 2) {
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
+                    }
+                }
+
+                twiml.say({
+                    language: 'es-MX',
+                    voice: 'Polly.Mia-Neural',
+                    rate: '83%'
+                }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
+                break;
+        }
+    res.type('text/xml').send(twiml.toString())
+    } catch (error) {
+        console.error(error);       
+        res.status(400).json({ error: error.message });
+    } 
+})
+
+router.post('/finish', async (req, res) => {
+    try {
+        const digitPressed = req.body.Digits
+        const twiml = new VoiceResponse()
+
+        switch(digitPressed) {
+            case '1':
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined)       
+                
+                if(userData.store === 'Velez') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
+                } else if (userData.store === 'Will') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vq7qsy/', userData)
+                } else {
+                    console.error('Not found store')
+                }
+        
+                twiml.say({
+                    language: 'es-MX',
+                    voice: 'Polly.Mia-Neural',
+                    rate: '83%'
+                }, 'Usted confirmó que la dirección mencionada es correcta. ¡Hasta luego!');
+                break;
+            case '2':
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
+                
+                if(userData.store === 'Velez') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
+                } else if (userData.store === 'Will') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vq7qsy/', userData)
+                } else {
+                    console.error('Not found store')
+                }
+
+                twiml.say({
+                    language: 'es-MX',
+                    voice: 'Polly.Mia-Neural',
+                    rate: '83%'
+                }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
+
+                break;
+            default:
+                for (let i = 0; i<= 2; i++) {
+                    const gather = twiml.gather({
+                        numDigits: 1,
+                        action: 'https://call-api-phi.vercel.app/finish',
+                        method: 'POST',
+                        timeout: 8
+                    })
+                
+                    gather.say({
+                        language: 'es-MX',
+                        voice: 'Polly.Mia-Neural',
+                        rate: '83%'
+                    }, 'Opción no válida. Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.')
 
                     if(i === 2) {
                         changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
