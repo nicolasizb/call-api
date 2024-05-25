@@ -36,7 +36,7 @@ router.post('/call', async (req, res) => {
             throw new Error("Datos inválidos")
         }
 
-        twiml.pause({ length: 1.5 });
+        twiml.pause({ length: 1 });
 
         twiml.say({ 
             language: 'es-MX',
