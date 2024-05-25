@@ -1,6 +1,5 @@
 const express = require('express')
 const axios = require('axios');
-const { twiml } = require('twilio');
 const router = express.Router()
 const VoiceResponse = require('twilio').twiml.VoiceResponse
 
