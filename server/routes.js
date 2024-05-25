@@ -38,11 +38,13 @@ router.post('/call', async (req, res) => {
 
         twiml.pause({ length: 1 });
 
+        const message = `Hola ${firstName} ${lastName}, le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${addressOne}, ${addressDetails || ''}, en ${city}`
+
         twiml.say({ 
             language: 'es-MX',
             voice: 'Polly.Mia-Neural',
             rate: '83%'
-        }, `Hola ${firstName} ${lastName}, le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${addressOne}, ${addressDetails || ''}, en ${city}`)
+        }, message)
         
         const gather = twiml.gather({
             numDigits: 1,
