@@ -115,7 +115,7 @@ router.post('/validation', async (req, res) => {
 
         switch (digitPressed) { 
             case '1':
-                changeData({digit:'Confirmado'})      
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined)      
 
                 if(userData.store == 'Velez') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
