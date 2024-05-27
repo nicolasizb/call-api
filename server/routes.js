@@ -17,7 +17,7 @@ let userData = {
     callSID: '',
 };
 
-function changeData(userID, store, number, address, city, digit, callSID) {
+function changeData({userID, store, number, address, city, digit, callSID}) {
     if (userID !== undefined) userData.userID = userID
     if (store !== undefined) userData.store = store
     if (number !== undefined) userData.number = number
@@ -115,7 +115,7 @@ router.post('/validation', async (req, res) => {
 
         switch (digitPressed) { 
             case '1':
-                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined)      
+                changeData({digit: 'Confirmado'})      
 
                 if(userData.store == 'Velez') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
