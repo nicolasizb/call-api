@@ -27,6 +27,10 @@ function changeData(userID, store, number, address, city, digit, callSID) {
     if (callSID !== undefined) userData.callSID = callSID
 }
 
+function processAddress(address) {
+    return address.replace(/[^a-zA-Z0-9\s]/g, '').toUpperCase();
+}
+
 router.post('/call', async (req, res) => {    
     try {
         const twiml = new VoiceResponse()
@@ -36,7 +40,9 @@ router.post('/call', async (req, res) => {
             throw new Error("Datos inválidos")
         }
 
-        const message = `Hola ${firstName} ${lastName}, le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${addressOne}, ${addressDetails || ''}, en ${city}`
+        const setAddress = processAddress(`${addressOne}, ${addressDetails || ''}`)
+
+        const message = `Hola ${firstName} ${lastName}, le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${setAddress}, en ${city}`
         
         twiml.pause({ length: 2 })
         
@@ -64,7 +70,7 @@ router.post('/call', async (req, res) => {
                 language: 'es-MX',
                 voice: 'Polly.Mia-Neural',
                 rate: '82%'
-            }, `Su dirección es: ${addressOne}, ${addressDetails || ''} en ${city}?`)
+            }, `Su dirección es: ${setAddress} en ${city}?`)
 
             const repeatGather = twiml.gather({
                 numDigits: 1,
@@ -95,7 +101,7 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        changeData(userID, store, clientNumber, addressOne + ', ' + `${addressDetails || ''}`, city, undefined, call.sid)
+        changeData(userID, store, clientNumber, setAddress, city, undefined, call.sid)
 
         res.status(200).json({ userID: userID, SID: call.sid })
     } catch (error) {
