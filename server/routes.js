@@ -42,15 +42,13 @@ router.post('/call', async (req, res) => {
 
         const setAddress = processAddress(`${addressOne}, ${addressDetails || ''}`)
 
-        const message = `Hola ${firstName} ${lastName}, le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${setAddress}, en ${city}`
-        
         twiml.pause({ length: 2 })
         
         twiml.say({ 
             language: 'es-MX',
             voice: 'Polly.Mia-Neural',
-            rate: '82%'
-        }, message)
+            rate: '81%'
+        },`Hola ${firstName} ${lastName}! Le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${setAddress}, en ${city}`)
         
         const gather = twiml.gather({
             numDigits: 1,
@@ -62,14 +60,14 @@ router.post('/call', async (req, res) => {
         gather.say({
             language: 'es-MX',
             voice: 'Polly.Mia-Neural',
-            rate: '82%'
+            rate: '81%'
         }, 'Marque el número 1, si está correcta la dirección. O marque el número 2 para repetirla.')
 
         for (let i = 0; i<= 2; i++) {
             twiml.say({
                 language: 'es-MX',
                 voice: 'Polly.Mia-Neural',
-                rate: '82%'
+                rate: '81%'
             }, `Su dirección es: ${setAddress} en ${city}?`)
 
             const repeatGather = twiml.gather({
@@ -82,7 +80,7 @@ router.post('/call', async (req, res) => {
             repeatGather.say({
                 language: 'es-MX',
                 voice: 'Polly.Mia-Neural',
-                rate: '82%'
+                rate: '81%'
             }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección.')
 
             if(i === 2) {
@@ -92,7 +90,7 @@ router.post('/call', async (req, res) => {
         twiml.say({
             language: 'es-MX',
             voice: 'Polly.Mia-Neural',
-            rate: '82%'
+            rate: '81%'
         }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
         
         const call = await twilio.calls.create({
@@ -131,14 +129,14 @@ router.post('/validation', async (req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, 'Usted confirmó que la dirección mencionada es correcta, gracias por su respuesta. ¡Hasta luego!')
                 break;
             case '2':
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, `Su dirección es: ${userData.address} en ${userData.city}?`)
 
                 const gather = twiml.gather({
@@ -151,14 +149,14 @@ router.post('/validation', async (req, res) => {
                 gather.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, `Marque el número 1, si está correcta. O marque el número 2 para cambiar dirección de envío.`)
 
                 for (let i = 0; i<= 2; i++) {
                     twiml.say({
                         language: 'es-MX',
                         voice: 'Polly.Mia-Neural',
-                        rate: '82%'
+                        rate: '81%'
                     }, `Su dirección es ${userData.address} en ${userData.city}?`)
 
                     const repeatGather = twiml.gather({
@@ -171,7 +169,7 @@ router.post('/validation', async (req, res) => {
                     repeatGather.say({
                         language: 'es-MX',
                         voice: 'Polly.Mia-Neural',
-                        rate: '82%'
+                        rate: '81%'
                     }, 'Marque el número 1, si está correcta. O marque el número 2 para cambiar dirección de envío.')
         
                     if(i === 2) {
@@ -182,7 +180,7 @@ router.post('/validation', async (req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
                 break;
             default:
@@ -197,7 +195,7 @@ router.post('/validation', async (req, res) => {
                     gather.say({
                         language: 'es-MX',
                         voice: 'Polly.Mia-Neural',
-                        rate: '82%'
+                        rate: '81%'
                     }, 'Opción no válida. Marque el número 1, si está correcta. O marque el número 2 para cambiar dirección de envío.')
                     
                     if(i === 2) {
@@ -208,7 +206,7 @@ router.post('/validation', async (req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
                 break;
         }        
@@ -239,7 +237,7 @@ router.post('/change-address', async (req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, 'Usted confirmó que la dirección mencionada es correcta. ¡Hasta luego!');
                 break;
             case '2':
@@ -253,7 +251,7 @@ router.post('/change-address', async (req, res) => {
                 gather.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, `Marque 1 para autorizar que lo contactemos al whatsapp para cambiar la dirección. O marque 2 para repetir la dirección actual.`)
 
                 for (let i = 0; i<= 2; i++) {
@@ -267,7 +265,7 @@ router.post('/change-address', async (req, res) => {
                     repeatGather.say({
                         language: 'es-MX',
                         voice: 'Polly.Mia-Neural',
-                        rate: '82%'
+                        rate: '81%'
                     }, 'Marque 1 para autorizar que lo contactemos al whatsapp para cambiar la dirección. O marque 2 para repetir la dirección actual.')
         
                     if(i === 2) {
@@ -278,7 +276,7 @@ router.post('/change-address', async (req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
                 break;
             default:
@@ -293,7 +291,7 @@ router.post('/change-address', async (req, res) => {
                     gather.say({
                         language: 'es-MX',
                         voice: 'Polly.Mia-Neural',
-                        rate: '82%'
+                        rate: '81%'
                     }, 'Opción no válida. Marque 1 para autorizar que lo contactemos al whatsapp para cambiar la dirección. O marque 2 para repetir la dirección actual.')
                     
                     if(i === 2) {
@@ -304,7 +302,7 @@ router.post('/change-address', async (req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
             
                 break;
@@ -336,14 +334,14 @@ router.post('/send-message', async(req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
-                }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
+                    rate: '81%'
+                }, 'Nos pondremos en contacto con usted pronto')
                 break;
             case '2':
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, `Su dirección es: ${userData.address} en ${userData.city}?`)
 
                 const gather = twiml.gather({
@@ -356,7 +354,7 @@ router.post('/send-message', async(req, res) => {
                 gather.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, `Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.`)
 
                 for (let i = 0; i<= 2; i++) {
@@ -370,7 +368,7 @@ router.post('/send-message', async(req, res) => {
                     repeatGather.say({
                         language: 'es-MX',
                         voice: 'Polly.Mia-Neural',
-                        rate: '82%'
+                        rate: '81%'
                     }, 'Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.')
         
                     if(i === 2) {
@@ -381,7 +379,7 @@ router.post('/send-message', async(req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
 
                 break;
@@ -397,7 +395,7 @@ router.post('/send-message', async(req, res) => {
                     gather.say({
                         language: 'es-MX',
                         voice: 'Polly.Mia-Neural',
-                        rate: '82%'
+                        rate: '81%'
                     }, 'Opción no válida. Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.')
 
                     if(i === 2) {
@@ -408,7 +406,7 @@ router.post('/send-message', async(req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
                 break;
         }
@@ -439,7 +437,7 @@ router.post('/finish', async (req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, 'Usted confirmó que la dirección mencionada es correcta. ¡Hasta luego!');
                 break;
             case '2':
@@ -456,7 +454,7 @@ router.post('/finish', async (req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, 'Nos pondremos en contacto con usted pronto.')
 
                 break;
@@ -472,7 +470,7 @@ router.post('/finish', async (req, res) => {
                     gather.say({
                         language: 'es-MX',
                         voice: 'Polly.Mia-Neural',
-                        rate: '82%'
+                        rate: '81%'
                     }, 'Opción no válida. Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.')
 
                     if(i === 2) {
@@ -483,7 +481,7 @@ router.post('/finish', async (req, res) => {
                 twiml.say({
                     language: 'es-MX',
                     voice: 'Polly.Mia-Neural',
-                    rate: '82%'
+                    rate: '81%'
                 }, 'Nos pondremos en contacto con usted pronto.')
                 break;
         }
