@@ -17,7 +17,7 @@ let userData = {
     callSID: '',
 };
 
-function changeData({userID, store, number, address, city, digit, callSID}) {
+function changeData(userID, store, number, address, city, digit, callSID) {
     if (userID !== undefined) userData.userID = userID
     if (store !== undefined) userData.store = store
     if (number !== undefined) userData.number = number
