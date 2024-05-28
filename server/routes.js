@@ -41,6 +41,7 @@ router.post('/call', async (req, res) => {
         }
 
         const setAddress = processAddress(`${addressOne}, ${addressDetails || ''}`)
+        const message = `Hola ${firstName} ${lastName}! Le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${setAddress}, en ${city}?`
 
         twiml.pause({ length: 2 })
         
@@ -48,13 +49,7 @@ router.post('/call', async (req, res) => {
             language: 'es-MX',
             voice: 'Polly.Mia-Neural',
             rate: '82%'
-        },`Hola ${firstName} ${lastName}!`)
-
-        twiml.say({ 
-            language: 'es-MX',
-            voice: 'Polly.Mia-Neural',
-            rate: '82%'
-        },`Le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${setAddress}, en ${city}?`)
+        }, message)
         
         const gather = twiml.gather({
             numDigits: 1,
