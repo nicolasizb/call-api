@@ -121,7 +121,7 @@ router.post('/call', async (req, res) => {
 
         changeData(userID, store, clientNumber, setAddress, city, undefined, call)
 
-        checkCallStatus()
+        await checkCallStatus()
 
         res.status(200).json({ userID: userID, SID: call.sid })
     } catch (error) {
