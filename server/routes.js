@@ -1,5 +1,6 @@
 const express = require('express')
 const axios = require('axios');
+const { ConversationContextImpl } = require('twilio/lib/rest/conversations/v1/conversation');
 const router = express.Router()
 const VoiceResponse = require('twilio').twiml.VoiceResponse
 
@@ -14,7 +15,7 @@ let userData = {
     address: '',
     city: '',
     digit: '',  
-    dataCall: ''
+    dataCall: '',
 }
 
 function changeData(userID, store, number, address, city, digit, dataCall) {
@@ -31,26 +32,21 @@ function processAddress(address) {
     return address.replace(/[^a-zA-Z0-9\s]/g, '').toUpperCase();
 }
 
-function showStatus(callSid) {
-    twilio.calls(callSid)
-        .fetch()
-        .then(call => {
-          console.log('Call status:', call.status);
-          return call.status;
-        })
-        .catch(error => {
-          console.error('Error fetching call status:', error);
-          return null;
-        });
-}
+async function checkCallStatus() {
+    try {
+        const call = await twilio.calls(userData.dataCall.sid).fetch()
 
-router.post('/call-status', (req, res) => {
-    const { CallSid, CallStatus } = req.body;
-    
-    console.log(`Call SID: ${CallSid}, Call Status: ${CallStatus}`);
-    
-    res.status(200).send('Status received');
-});
+        if(call.status == 'completed') {
+            userData.dataCall.status = call.status
+            console.log('Change to: ', userData.dataCall.status)
+        } else {
+            console.log('set to: ', userData.dataCall.status)
+        }
+    } catch (error) {
+        console.error('Error fetching call status:', error);
+        return null;
+    }
+}
 
 router.post('/call', async (req, res) => {    
     try {
@@ -123,7 +119,9 @@ router.post('/call', async (req, res) => {
             statusCallbackEvent: ['initiated', 'ringing', 'answered', 'completed']
         })
 
-        changeData(userID, store, clientNumber, setAddress, city, undefined, call.sid)
+        changeData(userID, store, clientNumber, setAddress, city, undefined, call)
+
+        checkCallStatus()
 
         res.status(200).json({ userID: userID, SID: call.sid })
     } catch (error) {
@@ -157,6 +155,7 @@ router.post('/validation', async (req, res) => {
                     voice: 'Polly.Mia-Neural',
                     rate: '82%'
                 }, 'Usted confirmó que la dirección mencionada es correcta, gracias por su respuesta. ¡Hasta luego!')
+
                 break;
             case '2':
                 twiml.say({
@@ -236,6 +235,8 @@ router.post('/validation', async (req, res) => {
                 }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
                 break;
         }        
+        checkCallStatus()
+
         res.type('text/xml').send(twiml.toString())
     } catch (error) {
         console.error(error);       
