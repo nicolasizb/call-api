@@ -31,6 +31,15 @@ function processAddress(address) {
     return address.replace(/[^a-zA-Z0-9\s]/g, '').toUpperCase();
 }
 
+router.post('/status', (req, res) => {
+    const callStatus = req.body.CallStatus;
+    const callSid = req.body.CallSid;
+  
+    console.log(`Call SID: ${callSid} - Status: ${callStatus}`);
+  
+    res.sendStatus(200);
+});
+
 router.post('/call', async (req, res) => {    
     try {
         const twiml = new VoiceResponse()
@@ -97,7 +106,9 @@ router.post('/call', async (req, res) => {
         const call = await twilio.calls.create({
             twiml: twiml.toString(),
             to: clientNumber,
-            from: process.env.SUPPORT_NUMBER
+            from: process.env.SUPPORT_NUMBER,
+            statusCallback: 'https://call-api-phi.vercel.app/status',
+            statusCallbackEvent: ['completed']
         })
 
         changeData(userID, store, clientNumber, setAddress, city, undefined, call.sid)
