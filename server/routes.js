@@ -15,7 +15,7 @@ let userData = {
     city: '',
     digit: '',  
     callSID: '',
-};
+}
 
 function changeData(userID, store, number, address, city, digit, callSID) {
     if (userID !== undefined) userData.userID = userID
@@ -43,7 +43,7 @@ router.post('/call', async (req, res) => {
         const setAddress = processAddress(`${addressOne}, ${addressDetails || ''}`)
         const message = `Hola ${firstName} ${lastName}! Le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${setAddress}, en ${city}?`
 
-        twiml.pause({ length: 2 })
+        twiml.pause({ length: 1 })
         
         twiml.say({ 
             language: 'es-MX',
@@ -122,9 +122,11 @@ router.post('/validation', async (req, res) => {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
                 } else if (userData.store == 'Will') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vq7qsy/', userData)
+                } else if (userData.store == 'Test') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/2y49aol/', userData)
                 } else {
-                    // another webhook
                     console.error('Not found store')
+                    req.status('Not found store')
                 }
 
                 twiml.say({
