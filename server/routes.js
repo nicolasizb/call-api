@@ -15,9 +15,10 @@ let userData = {
     city: '',
     digit: '',  
     callSID: '',
+    statusCall: '',
 }
 
-function changeData(userID, store, number, address, city, digit, callSID) {
+function changeData(userID, store, number, address, city, digit, callSID, statusCall) {
     if (userID !== undefined) userData.userID = userID
     if (store !== undefined) userData.store = store
     if (number !== undefined) userData.number = number
@@ -25,6 +26,7 @@ function changeData(userID, store, number, address, city, digit, callSID) {
     if (city !== undefined) userData.city = city
     if (digit !== undefined) userData.digit = digit
     if (callSID !== undefined) userData.callSID = callSID
+    if (statusCall !== undefined) userData.statusCall = statusCall
 }
 
 function processAddress(address) {
@@ -33,11 +35,11 @@ function processAddress(address) {
 
 router.post('/status', (req, res) => {
     const callStatus = req.body.CallStatus;
-    const callSid = req.body.CallSid;
   
-    console.log(`Call SID: ${callSid} - Status: ${callStatus}`);
-  
-    res.sendStatus(200);
+    changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, callStatus)
+
+    console.log(userData)
+    res.status(200);
 });
 
 router.post('/call', async (req, res) => {    
@@ -94,7 +96,7 @@ router.post('/call', async (req, res) => {
             }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección.')
 
             if(i === 2) {
-                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)
             }
         }
         twiml.say({
@@ -187,7 +189,7 @@ router.post('/validation', async (req, res) => {
                     }, 'Marque el número 1, si está correcta. O marque el número 2 para cambiar dirección de envío.')
         
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
                     }
                 }
 
@@ -213,7 +215,7 @@ router.post('/validation', async (req, res) => {
                     }, 'Opción no válida. Marque el número 1, si está correcta. O marque el número 2 para cambiar dirección de envío.')
                     
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
                     }
                 }
                 
@@ -286,7 +288,7 @@ router.post('/change-address', async (req, res) => {
                     }, 'Marque 1 para autorizar que lo contactemos al whatsapp para cambiar la dirección. O marque 2 para repetir la dirección actual.')
         
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
                     }
                 }
 
@@ -312,7 +314,7 @@ router.post('/change-address', async (req, res) => {
                     }, 'Opción no válida. Marque 1 para autorizar que lo contactemos al whatsapp para cambiar la dirección. O marque 2 para repetir la dirección actual.')
                     
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
                     }
                 }
                 
@@ -338,7 +340,7 @@ router.post('/send-message', async(req, res) => {
 
         switch(digitPressed) {
             case '1':
-                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
                 
                 if(userData.store == 'Velez') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
@@ -392,7 +394,7 @@ router.post('/send-message', async(req, res) => {
                     }, 'Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.')
         
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
                     }
                 }
 
@@ -419,7 +421,7 @@ router.post('/send-message', async(req, res) => {
                     }, 'Opción no válida. Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.')
 
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
                     }
                 }
 
@@ -464,7 +466,7 @@ router.post('/finish', async (req, res) => {
                 }, 'Usted confirmó que la dirección mencionada es correcta. ¡Hasta luego!');
                 break;
             case '2':
-                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
                 
                 if(userData.store === 'Velez') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
@@ -497,7 +499,7 @@ router.post('/finish', async (req, res) => {
                     }, 'Opción no válida. Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.')
 
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
                     }
                 }
 
