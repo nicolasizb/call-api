@@ -106,7 +106,9 @@ router.post('/call', async (req, res) => {
         const call = await twilio.calls.create({
             twiml: twiml.toString(),
             to: clientNumber,
-            from: process.env.SUPPORT_NUMBER
+            from: process.env.SUPPORT_NUMBER,
+            statusCallback: 'https://call-api-phi.vercel.app/status',
+            statusCallbackEvent: ['completed']
         })
 
         changeData(userID, store, clientNumber, setAddress, city, undefined, call.sid)
