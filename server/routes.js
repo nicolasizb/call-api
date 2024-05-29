@@ -45,7 +45,7 @@ router.post('/webhook', (req, res) => {
 
     showCallStatus(CallStatus)
 
-    res.sendStatus(200);
+    res.status(200).json(CallStatus);
 });
 
 router.post('/call', async (req, res) => {    
@@ -115,7 +115,7 @@ router.post('/call', async (req, res) => {
             twiml: twiml.toString(),
             to: clientNumber,
             from: process.env.SUPPORT_NUMBER,
-            statusCallback: 'https://call-api-phi.vercel.app/webhook',
+            statusCallback: 'https://hooks.zapier.com/hooks/catch/18861658/2yt4qat/',
             statusCallbackEvent: ['initiated', 'ringing', 'answered', 'completed']
         })
 
