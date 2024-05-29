@@ -16,6 +16,7 @@ let userData = {
     city: '',
     digit: '',  
     dataCall: '',
+    status: ''
 }
 
 function changeData(userID, store, number, address, city, digit, dataCall) {
@@ -32,21 +33,20 @@ function processAddress(address) {
     return address.replace(/[^a-zA-Z0-9\s]/g, '').toUpperCase();
 }
 
-async function checkCallStatus() {
-    try {
-        const call = await twilio.calls(userData.dataCall.sid).fetch()
-
-        if(call.status == 'completed') {
-            userData.dataCall.status = call.status
-            console.log('Change to: ', userData.dataCall.status)
-        } else {
-            console.log('set to: ', userData.dataCall.status)
-        }
-    } catch (error) {
-        console.error('Error fetching call status:', error);
-        return null;
-    }
+function showCallStatus(status) {
+    userData.status = status
+    console.log("SET STATUS: ", userData.status)
 }
+
+router.post('/webhook', (req, res) => {
+    const { CallStatus, CallSid } = req.body;
+  
+    console.log(`Estado de llamada (${CallSid}): ${CallStatus}`);
+
+    showCallStatus(CallStatus)
+
+    res.sendStatus(200);
+});
 
 router.post('/call', async (req, res) => {    
     try {
@@ -115,13 +115,11 @@ router.post('/call', async (req, res) => {
             twiml: twiml.toString(),
             to: clientNumber,
             from: process.env.SUPPORT_NUMBER,
-            statusCallback: 'https://call-api-phi.vercel.app/call-status',
+            statusCallback: 'https://call-api-phi.vercel.app/webhook',
             statusCallbackEvent: ['initiated', 'ringing', 'answered', 'completed']
         })
 
         changeData(userID, store, clientNumber, setAddress, city, undefined, call)
-
-        await checkCallStatus()
 
         res.status(200).json({ userID: userID, SID: call.sid })
     } catch (error) {
