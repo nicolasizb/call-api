@@ -41,9 +41,7 @@ router.post('/call', async (req, res) => {
         }
 
         const setAddress = processAddress(`${addressOne}, ${addressDetails || ''}`)
-        
-        twiml.pause({ length: 1 })
-        
+                
         twiml.say({ 
             language: 'es-MX',
             voice: 'Polly.Mia-Neural',
