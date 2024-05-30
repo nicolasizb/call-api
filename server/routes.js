@@ -1,6 +1,5 @@
 const express = require('express')
 const axios = require('axios');
-const { ConversationContextImpl } = require('twilio/lib/rest/conversations/v1/conversation');
 const router = express.Router()
 const VoiceResponse = require('twilio').twiml.VoiceResponse
 
@@ -15,8 +14,7 @@ let userData = {
     address: '',
     city: '',
     digit: '',  
-    dataCall: '',
-    status: ''
+    dataCall: ''
 }
 
 function changeData(userID, store, number, address, city, digit, dataCall) {
@@ -33,21 +31,6 @@ function processAddress(address) {
     return address.replace(/[^a-zA-Z0-9\s]/g, '').toUpperCase();
 }
 
-function showCallStatus(status) {
-    userData.status = status
-    console.log("SET STATUS: ", userData.status)
-}
-
-router.post('/webhook', (req, res) => {
-    const { CallStatus, CallSid } = req.body;
-  
-    console.log(`Estado de llamada (${CallSid}): ${CallStatus}`);
-
-    showCallStatus(CallStatus)
-
-    res.status(200).json(CallStatus);
-});
-
 router.post('/call', async (req, res) => {    
     try {
         const twiml = new VoiceResponse()
@@ -58,15 +41,14 @@ router.post('/call', async (req, res) => {
         }
 
         const setAddress = processAddress(`${addressOne}, ${addressDetails || ''}`)
-        const message = `Hola ${firstName} ${lastName}! Le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${setAddress}, en ${city}?`
-
+        
         twiml.pause({ length: 1 })
         
         twiml.say({ 
             language: 'es-MX',
             voice: 'Polly.Mia-Neural',
             rate: '82%'
-        }, message)
+        }, `Hola ${firstName} ${lastName}! Le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${setAddress}, en ${city}?`)
         
         const gather = twiml.gather({
             numDigits: 1,
