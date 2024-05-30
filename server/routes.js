@@ -94,9 +94,7 @@ router.post('/call', async (req, res) => {
         const call = await twilio.calls.create({
             twiml: twiml.toString(),
             to: clientNumber,
-            from: process.env.SUPPORT_NUMBER,
-            statusCallback: 'https://hooks.zapier.com/hooks/catch/18861658/2yt4qat/',
-            statusCallbackEvent: ['initiated', 'ringing', 'answered', 'completed']
+            from: process.env.SUPPORT_NUMBER
         })
 
         changeData(userID, store, clientNumber, setAddress, city, undefined, call.sid)
