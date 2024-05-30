@@ -121,6 +121,8 @@ router.post('/validation', async (req, res) => {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
                 } else if (userData.store == 'Will') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vq7qsy/', userData)
+                } else if(userData.store == 'Test') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/2y49aol/', userData)
                 } else {
                     // another webhook
                     console.error('Not found store')
@@ -226,11 +228,14 @@ router.post('/change-address', async (req, res) => {
             case '1' :
                 changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined)       
                 
-                if(userData.store === 'Velez') {
+                if(userData.store == 'Velez') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
-                } else if (userData.store === 'Will') {
+                } else if (userData.store == 'Will') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vq7qsy/', userData)
+                } else if(userData.store == 'Test') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/2y49aol/', userData)
                 } else {
+                    // another webhook
                     console.error('Not found store')
                 }
         
@@ -323,11 +328,14 @@ router.post('/send-message', async(req, res) => {
             case '1':
                 changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                 
-                if(userData.store === 'Velez') {
+                if(userData.store == 'Velez') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
-                } else if (userData.store === 'Will') {
+                } else if (userData.store == 'Will') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vq7qsy/', userData)
+                } else if(userData.store == 'Test') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/2y49aol/', userData)
                 } else {
+                    // another webhook
                     console.error('Not found store')
                 }
 
@@ -426,11 +434,14 @@ router.post('/finish', async (req, res) => {
             case '1':
                 changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined)       
                 
-                if(userData.store === 'Velez') {
+                if(userData.store == 'Velez') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
-                } else if (userData.store === 'Will') {
+                } else if (userData.store == 'Will') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vq7qsy/', userData)
+                } else if(userData.store == 'Test') {
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/2y49aol/', userData)
                 } else {
+                    // another webhook
                     console.error('Not found store')
                 }
         
