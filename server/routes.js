@@ -211,8 +211,6 @@ router.post('/validation', async (req, res) => {
                 }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
                 break;
         }        
-        checkCallStatus()
-
         res.type('text/xml').send(twiml.toString())
     } catch (error) {
         console.error(error);       
