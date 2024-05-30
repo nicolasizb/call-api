@@ -99,7 +99,7 @@ router.post('/call', async (req, res) => {
             statusCallbackEvent: ['initiated', 'ringing', 'answered', 'completed']
         })
 
-        changeData(userID, store, clientNumber, setAddress, city, undefined, call)
+        changeData(userID, store, clientNumber, setAddress, city, undefined, call.sid)
 
         res.status(200).json({ userID: userID, SID: call.sid })
     } catch (error) {
