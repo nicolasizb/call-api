@@ -38,7 +38,7 @@ router.post('/call', async (req, res) => {
         const twiml = new VoiceResponse()
 
         const { userID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName, crmID } = req.body
-        if (!userID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName || crmID) {
+        if (!userID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName || !crmID) {
             throw new Error("Datos inválidos")
         }
 
