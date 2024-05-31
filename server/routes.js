@@ -64,17 +64,18 @@ router.post('/call', async (req, res) => {
             rate: '82%'
         }, 'Marque el número 1, si está correcta la dirección. O marque el número 2 para repetirla.')
 
-        const xmlTwiml = twiml.toString() 
-
         const call = await twilio.calls.create({
-            twiml: xmlTwiml,
+            twiml: twiml.toString(),
             to: clientNumber,
             from: process.env.SUPPORT_NUMBER
         })
 
         changeData(userID, store, clientNumber, setAddress, city, undefined, call.sid, crmID)
 
-        res.type('text/xml').send(xmlTwiml)
+        res.status(200).json({
+            data: userData,
+            SID: call.sid
+        })
     } catch (error) {
         console.error(error)
         res.status(400).json({ error: error.message })
