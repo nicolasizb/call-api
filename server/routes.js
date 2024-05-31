@@ -124,8 +124,7 @@ router.post('/validation', async (req, res) => {
                 } else if(userData.store == 'Test') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/2y49aol/', userData)
                 } else {
-                    // another webhook
-                    console.error('Not found store')
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/2yt4qat/', userData)
                 }
 
                 twiml.say({
@@ -235,8 +234,7 @@ router.post('/change-address', async (req, res) => {
                 } else if(userData.store == 'Test') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/2y49aol/', userData)
                 } else {
-                    // another webhook
-                    console.error('Not found store')
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/2yt4qat/', userData)
                 }
         
                 twiml.say({
@@ -335,8 +333,7 @@ router.post('/send-message', async(req, res) => {
                 } else if(userData.store == 'Test') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/2y49aol/', userData)
                 } else {
-                    // another webhook
-                    console.error('Not found store')
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/2yt4qat/', userData)
                 }
 
                 twiml.say({
@@ -441,8 +438,7 @@ router.post('/finish', async (req, res) => {
                 } else if(userData.store == 'Test') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/2y49aol/', userData)
                 } else {
-                    // another webhook
-                    console.error('Not found store')
+                    await axios.post('https://hooks.zapier.com/hooks/catch/18861658/2yt4qat/', userData)
                 }
         
                 twiml.say({
