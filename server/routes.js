@@ -64,6 +64,29 @@ router.post('/call', async (req, res) => {
             rate: '82%'
         }, 'Marque el número 1, si está correcta la dirección. O marque el número 2 para repetirla.')
 
+        for (let i = 0; i<= 2; i++) {
+            twiml.say({
+                language: 'es-MX',
+                voice: 'Polly.Mia-Neural',
+                rate: '81%'
+            }, `Su dirección es: ${setAddress} en ${city}?`)
+            const repeatGather = twiml.gather({
+                numDigits: 1,
+                action: 'https://call-api-phi.vercel.app/validation',
+                method: 'POST',
+                timeout: 10
+            })
+        
+            repeatGather.say({
+                language: 'es-MX',
+                voice: 'Polly.Mia-Neural',
+                rate: '81%'
+            }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección.')
+            if(i === 2) {
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)
+            }
+        }
+
         xmlTwiml = twiml.toString()
 
         const call = await twilio.calls.create({
