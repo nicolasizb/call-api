@@ -73,7 +73,7 @@ router.post('/call', async (req, res) => {
 
         changeData(userID, store, clientNumber, setAddress, city, undefined, call.sid, crmID)
 
-        res.status(200).json({ userID: userID, SID: call.sid })
+        res.type('text/xml').send(twiml)
     } catch (error) {
         console.error(error)
         res.status(400).json({ error: error.message })
