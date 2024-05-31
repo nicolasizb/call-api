@@ -74,13 +74,7 @@ router.post('/call', async (req, res) => {
 
         changeData(userID, store, clientNumber, setAddress, city, undefined, call.sid, crmID)
 
-        res.status(200).json({
-            data: userData,
-            SID: call.sid
-        })
-
         res.setHeader('Content-Type', 'application/xml+json');
-
         res.send({ 
             xml: xmlTwiml, 
             json: userData 
