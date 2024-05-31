@@ -35,12 +35,13 @@ function processAddress(address) {
 
 router.post('/call', async (req, res) => {    
     try {
+        const twiml = new VoiceResponse()
+
         const { userID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName, crmID } = req.body
         if (!userID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName || !crmID) {
             throw new Error("Datos inválidos")
         }
 
-        const twiml = new VoiceResponse()
         const setAddress = processAddress(`${addressOne}, ${addressDetails || ''}`)
 
         twiml.pause({ length: 2 })
@@ -68,8 +69,9 @@ router.post('/call', async (req, res) => {
             twiml.say({
                 language: 'es-MX',
                 voice: 'Polly.Mia-Neural',
-                rate: '81%'
+                rate: '82%'
             }, `Su dirección es: ${setAddress} en ${city}?`)
+
             const repeatGather = twiml.gather({
                 numDigits: 1,
                 action: 'https://call-api-phi.vercel.app/validation',
@@ -80,28 +82,28 @@ router.post('/call', async (req, res) => {
             repeatGather.say({
                 language: 'es-MX',
                 voice: 'Polly.Mia-Neural',
-                rate: '81%'
+                rate: '82%'
             }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección.')
+
             if(i === 2) {
                 changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)
             }
         }
-
-        xmlTwiml = twiml.toString()
-
+        twiml.say({
+            language: 'es-MX',
+            voice: 'Polly.Mia-Neural',
+            rate: '82%'
+        }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
+        
         const call = await twilio.calls.create({
-            twiml: xmlTwiml,
+            twiml: twiml.toString(),
             to: clientNumber,
             from: process.env.SUPPORT_NUMBER
         })
 
         changeData(userID, store, clientNumber, setAddress, city, undefined, call.sid, crmID)
 
-        res.setHeader('Content-Type', 'application/xml+json');
-        res.send({ 
-            xml: xmlTwiml, 
-            json: userData 
-        });
+        res.status(200).json({ userID: userID, SID: call.sid })
     } catch (error) {
         console.error(error)
         res.status(400).json({ error: error.message })
