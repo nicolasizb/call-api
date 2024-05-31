@@ -15,10 +15,9 @@ let userData = {
     city: '',
     digit: '',  
     callSID: '',
-    crmID: ''
 }
 
-function changeData(userID, store, number, address, city, digit, callSID, crmID) {
+function changeData(userID, store, number, address, city, digit, callSID) {
     if (userID !== undefined) userData.userID = userID
     if (store !== undefined) userData.store = store
     if (number !== undefined) userData.number = number
@@ -26,7 +25,6 @@ function changeData(userID, store, number, address, city, digit, callSID, crmID)
     if (city !== undefined) userData.city = city
     if (digit !== undefined) userData.digit = digit
     if (callSID !== undefined) userData.callSID = callSID
-    if (crmID !== undefined) userData.crmID = crmID
 }
 
 function processAddress(address) {
@@ -86,7 +84,7 @@ router.post('/call', async (req, res) => {
             }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección.')
 
             if(i === 2) {
-                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)
             }
         }
         twiml.say({
@@ -101,7 +99,7 @@ router.post('/call', async (req, res) => {
             from: process.env.SUPPORT_NUMBER
         })
 
-        changeData(userID, store, clientNumber, setAddress, city, undefined, call.sid, crmID)
+        changeData(userID, store, clientNumber, setAddress, city, undefined, call.sid)
 
         res.status(200).json({ userID: userID, SID: call.sid })
     } catch (error) {
@@ -117,7 +115,7 @@ router.post('/validation', async (req, res) => {
 
         switch (digitPressed) { 
             case '1':
-                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined, undefined)      
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined)      
 
                 if(userData.store == 'Velez') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
@@ -177,7 +175,7 @@ router.post('/validation', async (req, res) => {
                     }, 'Marque el número 1, si está correcta. O marque el número 2 para cambiar dirección de envío.')
         
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                     }
                 }
 
@@ -203,7 +201,7 @@ router.post('/validation', async (req, res) => {
                     }, 'Opción no válida. Marque el número 1, si está correcta. O marque el número 2 para cambiar dirección de envío.')
                     
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                     }
                 }
                 
@@ -228,7 +226,7 @@ router.post('/change-address', async (req, res) => {
         
         switch(digitPressed) {
             case '1' :
-                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined, undefined)       
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined)       
                 
                 if(userData.store == 'Velez') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
@@ -276,7 +274,7 @@ router.post('/change-address', async (req, res) => {
                     }, 'Marque 1 para autorizar que lo contactemos al whatsapp para cambiar la dirección. O marque 2 para repetir la dirección actual.')
         
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                     }
                 }
 
@@ -302,7 +300,7 @@ router.post('/change-address', async (req, res) => {
                     }, 'Opción no válida. Marque 1 para autorizar que lo contactemos al whatsapp para cambiar la dirección. O marque 2 para repetir la dirección actual.')
                     
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                     }
                 }
                 
@@ -328,7 +326,7 @@ router.post('/send-message', async(req, res) => {
 
         switch(digitPressed) {
             case '1':
-                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                 
                 if(userData.store == 'Velez') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
@@ -382,7 +380,7 @@ router.post('/send-message', async(req, res) => {
                     }, 'Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.')
         
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                     }
                 }
 
@@ -409,7 +407,7 @@ router.post('/send-message', async(req, res) => {
                     }, 'Opción no válida. Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.')
 
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                     }
                 }
 
@@ -434,7 +432,7 @@ router.post('/finish', async (req, res) => {
 
         switch(digitPressed) {
             case '1':
-                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined, undefined)       
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Confirmado', undefined)       
                 
                 if(userData.store == 'Velez') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
@@ -454,7 +452,7 @@ router.post('/finish', async (req, res) => {
                 }, 'Usted confirmó que la dirección mencionada es correcta. ¡Hasta luego!');
                 break;
             case '2':
-                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
+                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                 
                 if(userData.store === 'Velez') {
                     await axios.post('https://hooks.zapier.com/hooks/catch/18861658/3vks138/', userData)
@@ -487,7 +485,7 @@ router.post('/finish', async (req, res) => {
                     }, 'Opción no válida. Marque el número 1, si está correcta. O marque el número 2 para autorizar contactarlo por Whatsapp para cambiar la dirección.')
 
                     if(i === 2) {
-                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined, undefined)       
+                        changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)       
                     }
                 }
 
