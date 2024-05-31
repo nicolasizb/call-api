@@ -64,8 +64,10 @@ router.post('/call', async (req, res) => {
             rate: '82%'
         }, 'Marque el número 1, si está correcta la dirección. O marque el número 2 para repetirla.')
 
+        xmlTwiml = twiml.toString()
+
         const call = await twilio.calls.create({
-            twiml: twiml.toString(),
+            twiml: xmlTwiml,
             to: clientNumber,
             from: process.env.SUPPORT_NUMBER
         })
@@ -76,6 +78,13 @@ router.post('/call', async (req, res) => {
             data: userData,
             SID: call.sid
         })
+
+        res.setHeader('Content-Type', 'application/xml+json');
+
+        res.send({ 
+            xml: xmlTwiml, 
+            json: userData 
+        });
     } catch (error) {
         console.error(error)
         res.status(400).json({ error: error.message })
