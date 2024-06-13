@@ -28,7 +28,7 @@ function changeData(userID, store, number, address, city, digit, callSID) {
 }
 
 function processAddress(address) {
-    return address.replace(/[^a-zA-Z0-9\s]/g, '').toUpperCase();
+    return address.replace(/[^a-zA-Z0-9\s]/g, ' ').toUpperCase();
 }
 
 router.post('/call', async (req, res) => {    
@@ -38,68 +38,68 @@ router.post('/call', async (req, res) => {
         const { userID, clientNumber, addressOne, addressDetails, city, store, firstName, lastName } = req.body
         if (!userID || !clientNumber || !addressOne || !city || !store || !firstName || !lastName) {
             throw new Error("Datos inválidos")
-        }
-
-        const setAddress = processAddress(`${addressOne}, ${addressDetails || ''}`)
+        } else {
+            const setAddress = processAddress(`${addressOne}, ${addressDetails || ''}`)
         
-        twiml.say({ 
-            language: 'es-MX',
-            voice: 'Polly.Mia-Neural',
-            rate: '82%'
-        },`Hola ${firstName} ${lastName || ''}! Le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${setAddress}, en ${city}`)
-        
-        const gather = twiml.gather({
-            numDigits: 1,
-            action: 'https://call-api-phi.vercel.app/validation',
-            method: 'POST',
-            timeout: 10
-        })
-        
-        gather.say({
-            language: 'es-MX',
-            voice: 'Polly.Mia-Neural',
-            rate: '82%'
-        }, 'Marque el número 1, si está correcta la dirección. O marque el número 2 para repetirla.')
-
-        for (let i = 0; i<= 2; i++) {
-            twiml.say({
+            twiml.say({ 
                 language: 'es-MX',
                 voice: 'Polly.Mia-Neural',
                 rate: '82%'
-            }, `Su dirección es: ${setAddress} en ${city}?`)
-
-            const repeatGather = twiml.gather({
+            },`Hola ${firstName} ${lastName || ''}! Le llamamos de la tienda ${store} para confirmar la dirección de envío de su pedido. ¿Es correcta la dirección: ${setAddress}, en ${city}`)
+            
+            const gather = twiml.gather({
                 numDigits: 1,
                 action: 'https://call-api-phi.vercel.app/validation',
                 method: 'POST',
                 timeout: 10
             })
-        
-            repeatGather.say({
+            
+            gather.say({
                 language: 'es-MX',
                 voice: 'Polly.Mia-Neural',
                 rate: '82%'
-            }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección.')
-
-            if(i === 2) {
-                changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)
-            }
-        }
-        twiml.say({
-            language: 'es-MX',
-            voice: 'Polly.Mia-Neural',
-            rate: '82%'
-        }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
+            }, 'Marque el número 1, si está correcta la dirección. O marque el número 2 para repetirla.')
         
-        const call = await twilio.calls.create({
-            twiml: twiml.toString(),
-            to: clientNumber,
-            from: process.env.SUPPORT_NUMBER
-        })
-
-        changeData(userID, store, clientNumber, setAddress, city, undefined, call.sid)
-
-        res.status(200).json({ userID: userID, SID: call.sid })
+            for (let i = 0; i<= 2; i++) {
+                twiml.say({
+                    language: 'es-MX',
+                    voice: 'Polly.Mia-Neural',
+                    rate: '82%'
+                }, `Su dirección es: ${setAddress} en ${city}?`)
+            
+                const repeatGather = twiml.gather({
+                    numDigits: 1,
+                    action: 'https://call-api-phi.vercel.app/validation',
+                    method: 'POST',
+                    timeout: 10
+                })
+            
+                repeatGather.say({
+                    language: 'es-MX',
+                    voice: 'Polly.Mia-Neural',
+                    rate: '82%'
+                }, 'Marque el número 1, si está correcta. O marque el número 2 para repetir la dirección.')
+            
+                if(i === 2) {
+                    changeData(undefined, undefined, undefined, undefined, undefined, 'Cambiar', undefined)
+                }
+            }
+            twiml.say({
+                language: 'es-MX',
+                voice: 'Polly.Mia-Neural',
+                rate: '82%'
+            }, 'Nos pondremos en contacto con usted por whatsapp para confirmar su dirección.')
+            
+            const call = await twilio.calls.create({
+                twiml: twiml.toString(),
+                to: clientNumber,
+                from: process.env.SUPPORT_NUMBER
+            })
+        
+            changeData(userID, store, clientNumber, setAddress, city, undefined, call.sid)
+        
+            res.status(200).json({ userID: userID, SID: call.sid })
+        }
     } catch (error) {
         console.error(error)
         res.status(400).json({ error: error.message })
